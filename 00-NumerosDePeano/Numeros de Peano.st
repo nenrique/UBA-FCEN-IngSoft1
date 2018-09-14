@@ -17,6 +17,11 @@ next
 	^II! !
 
 
+!I class methodsFor: 'Expresiones de error' stamp: 'NME 9/14/2018 18:52:13'!
+descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
+
+	^'No se puede dividir por un número mayor'! !
+
 !I class methodsFor: 'Expresiones de error' stamp: 'NME 9/14/2018 18:12:45'!
 descripcionDeErrorDeNumerosNegativosNoSoportados
 
@@ -38,6 +43,12 @@ descripcionDeErrorDeNumerosNegativosNoSoportados
 
 	self error: self descripcionDeErrorDeNumerosNegativosNoSoportados.! !
 
+!I class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 18:56:40'!
+/ unNumeroDePeano
+	
+	unNumeroDePeano = I ifTrue: [^I].
+	self error: self descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor.! !
+
 
 !classDefinition: #II category: #'Numeros de Peano'!
 DenotativeObject subclass: #II
@@ -52,7 +63,7 @@ DenotativeObject subclass: #II
 II class
 	instanceVariableNames: 'next prev'!
 
-!II class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 18:31:01'!
+!II class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:59:43'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -80,7 +91,6 @@ previous: unNumeroDePeano
 	prev _ unNumeroDePeano! !
 
 
-
 !II class methodsFor: 'Operaciones' stamp: 'NME 9/13/2018 12:51:08'!
 * unNumeroDePeano 
 	
@@ -98,6 +108,26 @@ previous: unNumeroDePeano
 	
 	^self previous - unNumeroDePeano previous.! !
 
+!II class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:55:27'!
+/ unNumeroDePeano
+
+	unNumeroDePeano = I ifTrue: [^self value].
+	
+	unNumeroDePeano = self value ifTrue: [^I].
+
+	self value < unNumeroDePeano ifTrue: [self error: self descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor].
+	
+	^(self value - unNumeroDePeano / unNumeroDePeano) next.
+	
+	
+	! !
+
+
+!II class methodsFor: 'Expresiones de Error' stamp: 'NME 9/14/2018 19:46:17'!
+descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
+
+	^'No se puede dividir por un número mayor'! !
+
 
 !classDefinition: #III category: #'Numeros de Peano'!
 DenotativeObject subclass: #III
@@ -112,14 +142,14 @@ DenotativeObject subclass: #III
 III class
 	instanceVariableNames: 'next prev'!
 
-!III class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 18:31:01'!
+!III class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:59:43'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
 	next := IIII.
 	prev := II.! !
 
-!III class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 18:30:17'!
+!III class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:56:05'!
 next
 	
 	next ifNil:
@@ -129,33 +159,53 @@ next
 	].
 	^next! !
 
-!III class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 18:30:17'!
+!III class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:56:05'!
 previous
 
 	^prev! !
 
-!III class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 18:30:17'!
+!III class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:56:05'!
 previous: unNumeroDePeano
 
 	prev _ unNumeroDePeano! !
 
 
-!III class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 18:30:17'!
+!III class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:05'!
 * unNumeroDePeano 
 	
 	^(self previous * unNumeroDePeano) + unNumeroDePeano ! !
 
-!III class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 18:30:17'!
+!III class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:05'!
 + unNumeroDePeano
 
 	^self previous + unNumeroDePeano next! !
 
-!III class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 18:30:17'!
+!III class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:05'!
 - unNumeroDePeano
 
 	unNumeroDePeano = I ifTrue: [^self previous].
 	
 	^self previous - unNumeroDePeano previous.! !
+
+!III class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:05'!
+/ unNumeroDePeano
+
+	unNumeroDePeano = I ifTrue: [^self value].
+	
+	unNumeroDePeano = self value ifTrue: [^I].
+
+	self value < unNumeroDePeano ifTrue: [self error: self descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor].
+	
+	^(self value - unNumeroDePeano / unNumeroDePeano) next.
+	
+	
+	! !
+
+
+!III class methodsFor: 'Expresiones de Error' stamp: 'NME 9/14/2018 19:56:05'!
+descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
+
+	^'No se puede dividir por un número mayor'! !
 
 
 !classDefinition: #IIII category: #'Numeros de Peano'!
@@ -171,14 +221,14 @@ DenotativeObject subclass: #IIII
 IIII class
 	instanceVariableNames: 'next prev'!
 
-!IIII class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 18:31:01'!
+!IIII class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:59:43'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
 	next := nil.
 	prev := III.! !
 
-!IIII class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 18:30:37'!
+!IIII class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:56:06'!
 next
 	
 	next ifNil:
@@ -188,33 +238,53 @@ next
 	].
 	^next! !
 
-!IIII class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 18:30:37'!
+!IIII class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:56:06'!
 previous
 
 	^prev! !
 
-!IIII class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 18:30:37'!
+!IIII class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:56:06'!
 previous: unNumeroDePeano
 
 	prev _ unNumeroDePeano! !
 
 
-!IIII class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 18:30:37'!
+!IIII class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:06'!
 * unNumeroDePeano 
 	
 	^(self previous * unNumeroDePeano) + unNumeroDePeano ! !
 
-!IIII class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 18:30:37'!
+!IIII class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:06'!
 + unNumeroDePeano
 
 	^self previous + unNumeroDePeano next! !
 
-!IIII class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 18:30:37'!
+!IIII class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:06'!
 - unNumeroDePeano
 
 	unNumeroDePeano = I ifTrue: [^self previous].
 	
 	^self previous - unNumeroDePeano previous.! !
+
+!IIII class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:06'!
+/ unNumeroDePeano
+
+	unNumeroDePeano = I ifTrue: [^self value].
+	
+	unNumeroDePeano = self value ifTrue: [^I].
+
+	self value < unNumeroDePeano ifTrue: [self error: self descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor].
+	
+	^(self value - unNumeroDePeano / unNumeroDePeano) next.
+	
+	
+	! !
+
+
+!IIII class methodsFor: 'Expresiones de Error' stamp: 'NME 9/14/2018 19:56:06'!
+descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor
+
+	^'No se puede dividir por un número mayor'! !
 
 II initializeAfterFileIn!
 III initializeAfterFileIn!
