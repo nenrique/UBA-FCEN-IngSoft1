@@ -68,7 +68,7 @@ DenotativeObject subclass: #II
 II class
 	instanceVariableNames: 'next prev'!
 
-!II class methodsFor: 'as yet unclassified' stamp: 'alanLebe 9/15/2018 13:12:53'!
+!II class methodsFor: 'as yet unclassified' stamp: 'alanLebe 9/15/2018 13:18:03'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -150,7 +150,7 @@ DenotativeObject subclass: #III
 III class
 	instanceVariableNames: 'next prev'!
 
-!III class methodsFor: 'as yet unclassified' stamp: 'alanLebe 9/15/2018 13:12:53'!
+!III class methodsFor: 'as yet unclassified' stamp: 'alanLebe 9/15/2018 13:18:03'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -188,12 +188,10 @@ previous: unNumeroDePeano
 
 	^self previous + unNumeroDePeano next! !
 
-!III class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:05'!
+!III class methodsFor: 'Operaciones' stamp: 'alanLebe 9/15/2018 13:17:37'!
 - unNumeroDePeano
 
-	unNumeroDePeano = I ifTrue: [^self previous].
-	
-	^self previous - unNumeroDePeano previous.! !
+	^ unNumeroDePeano unNumeroDePeanoMenosSelf: self.! !
 
 !III class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:05'!
 / unNumeroDePeano
@@ -208,6 +206,11 @@ previous: unNumeroDePeano
 	
 	
 	! !
+
+!III class methodsFor: 'Operaciones' stamp: 'alanLebe 9/15/2018 13:17:11'!
+unNumeroDePeanoMenosSelf: unNumeroDePeano
+
+	^ unNumeroDePeano previous - self previous.! !
 
 
 !III class methodsFor: 'Expresiones de Error' stamp: 'NME 9/14/2018 19:56:05'!
@@ -229,7 +232,7 @@ DenotativeObject subclass: #IIII
 IIII class
 	instanceVariableNames: 'next prev'!
 
-!IIII class methodsFor: 'as yet unclassified' stamp: 'alanLebe 9/15/2018 13:12:53'!
+!IIII class methodsFor: 'as yet unclassified' stamp: 'alanLebe 9/15/2018 13:18:03'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -267,12 +270,10 @@ previous: unNumeroDePeano
 
 	^self previous + unNumeroDePeano next! !
 
-!IIII class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:06'!
+!IIII class methodsFor: 'Operaciones' stamp: 'alanLebe 9/15/2018 13:17:43'!
 - unNumeroDePeano
 
-	unNumeroDePeano = I ifTrue: [^self previous].
-	
-	^self previous - unNumeroDePeano previous.! !
+	^ unNumeroDePeano unNumeroDePeanoMenosSelf: self.! !
 
 !IIII class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:56:06'!
 / unNumeroDePeano
@@ -287,6 +288,11 @@ previous: unNumeroDePeano
 	
 	
 	! !
+
+!IIII class methodsFor: 'Operaciones' stamp: 'alanLebe 9/15/2018 13:17:19'!
+unNumeroDePeanoMenosSelf: unNumeroDePeano
+
+	^ unNumeroDePeano previous - self previous.! !
 
 
 !IIII class methodsFor: 'Expresiones de Error' stamp: 'NME 9/14/2018 19:56:06'!
