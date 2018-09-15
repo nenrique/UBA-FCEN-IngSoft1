@@ -49,6 +49,11 @@ descripcionDeErrorDeNumerosNegativosNoSoportados
 	unNumeroDePeano = I ifTrue: [^I].
 	self error: self descripcionDeErrorDeNoSePuedeDividirPorUnNumeroMayor.! !
 
+!I class methodsFor: 'Operaciones' stamp: 'alanLebe 9/15/2018 13:06:47'!
+unNumeroDePeanoMenosSelf: unNumeroDePeano
+
+	 ^ unNumeroDePeano previous.! !
+
 
 !classDefinition: #II category: #'Numeros de Peano'!
 DenotativeObject subclass: #II
@@ -63,7 +68,7 @@ DenotativeObject subclass: #II
 II class
 	instanceVariableNames: 'next prev'!
 
-!II class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:59:43'!
+!II class methodsFor: 'as yet unclassified' stamp: 'alanLebe 9/15/2018 13:12:53'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -101,12 +106,10 @@ previous: unNumeroDePeano
 
 	^self previous + unNumeroDePeano next! !
 
-!II class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 18:24:40'!
+!II class methodsFor: 'Operaciones' stamp: 'alanLebe 9/15/2018 13:12:13'!
 - unNumeroDePeano
 
-	unNumeroDePeano = I ifTrue: [^self previous].
-	
-	^self previous - unNumeroDePeano previous.! !
+	^ unNumeroDePeano unNumeroDePeanoMenosSelf: self.! !
 
 !II class methodsFor: 'Operaciones' stamp: 'NME 9/14/2018 19:55:27'!
 / unNumeroDePeano
@@ -121,6 +124,11 @@ previous: unNumeroDePeano
 	
 	
 	! !
+
+!II class methodsFor: 'Operaciones' stamp: 'alanLebe 9/15/2018 13:07:38'!
+unNumeroDePeanoMenosSelf: unNumeroDePeano
+
+	^ unNumeroDePeano previous - self previous.! !
 
 
 !II class methodsFor: 'Expresiones de Error' stamp: 'NME 9/14/2018 19:46:17'!
@@ -142,7 +150,7 @@ DenotativeObject subclass: #III
 III class
 	instanceVariableNames: 'next prev'!
 
-!III class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:59:43'!
+!III class methodsFor: 'as yet unclassified' stamp: 'alanLebe 9/15/2018 13:12:53'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
@@ -221,7 +229,7 @@ DenotativeObject subclass: #IIII
 IIII class
 	instanceVariableNames: 'next prev'!
 
-!IIII class methodsFor: 'as yet unclassified' stamp: 'NME 9/14/2018 19:59:43'!
+!IIII class methodsFor: 'as yet unclassified' stamp: 'alanLebe 9/15/2018 13:12:53'!
 initializeCollaboratorsFromFile
 	"Auto generated method for loading purposes - Do not modify it"
 
