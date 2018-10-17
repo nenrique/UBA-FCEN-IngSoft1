@@ -40,6 +40,10 @@ initializeFor: aValue
 	value := aValue ! !
 
 
+!Deposit methodsFor: 'value' stamp: 'LR 10/17/2018 05:11:15'!
+applyTransaction: aValue
+	^ aValue + (self value).! !
+
 !Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
 value
 
@@ -64,16 +68,20 @@ AccountTransaction subclass: #Withdraw
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
+!Withdraw methodsFor: 'initialization' stamp: 'LR 10/17/2018 05:11:24'!
+applyTransaction: aValue
+	^ aValue - (self value).! !
+
 !Withdraw methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:46'!
 initializeFor: aValue
 
 	value := aValue ! !
 
 
-!Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:33'!
+!Withdraw methodsFor: 'value' stamp: 'LR 10/17/2018 03:53:12'!
 value
 
-	^ value! !
+	^  value ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -135,16 +143,16 @@ balance
 	^ balanceResult ! !
 
 
-!Portfolio methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:28'!
+!Portfolio methodsFor: 'testing' stamp: 'LR 10/17/2018 05:21:09'!
 doesManage: anAccount
 
-	self shouldBeImplemented 
-! !
+	^ accounts includes: anAccount .! !
 
-!Portfolio methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:54'!
+!Portfolio methodsFor: 'testing' stamp: 'LR 10/17/2018 05:20:17'!
 hasRegistered: aTransaction
 
-	self shouldBeImplemented ! !
+	accounts do: [:account | (account hasRegistered: aTransaction) ifTrue: [^true] ].
+	^false.! !
 
 
 !Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 03:27:44'!
@@ -153,10 +161,15 @@ initializeWith: leftAccount with: rightAccount
 	accounts add: leftAccount.
 	accounts add: rightAccount.! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:39'!
+!Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 05:25:35'!
 transactions 
 
-	self shouldBeImplemented ! !
+	| transactions |
+	transactions  _ OrderedCollection new.
+	
+	accounts do: [:account | transactions addAll: (account transactions)].
+	
+	^ transactions.! !
 
 !Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:40'!
 transactionsOf: anAccount 
@@ -217,13 +230,13 @@ transactions
 	^ transactions copy! !
 
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'LR 10/17/2018 03:26:35'!
+!ReceptiveAccount methodsFor: 'balance' stamp: 'LR 10/17/2018 05:11:52'!
 balance
 	
 	| balanceResult |
 	balanceResult  _ 0.
 	
-	transactions do: [:transaction | balanceResult _ balanceResult + transaction value].
+	transactions do: [:transaction | balanceResult _ transaction applyTransaction: balanceResult].
 	
 	^ balanceResult ! !
 
