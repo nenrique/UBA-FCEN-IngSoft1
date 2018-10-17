@@ -159,18 +159,11 @@ doesManage: anAccount
 
 	^self = anAccount or: [accounts anySatisfy: [:managedAccount| managedAccount doesManage: anAccount ]].! !
 
-!Portfolio methodsFor: 'testing' stamp: 'LR 10/17/2018 05:20:17'!
+!Portfolio methodsFor: 'testing' stamp: 'NME 10/17/2018 15:38:20'!
 hasRegistered: aTransaction
 
-	accounts do: [:account | (account hasRegistered: aTransaction) ifTrue: [^true] ].
-	^false.! !
+^accounts anySatisfy: [:anAccount| anAccount hasRegistered: aTransaction ].! !
 
-
-!Portfolio methodsFor: 'transactions' stamp: 'NME 10/17/2018 14:48:14'!
-initializeWith: leftAccount with: rightAccount
-	accounts _ OrderedCollection new.
-	accounts add: leftAccount.
-	accounts add: rightAccount.! !
 
 !Portfolio methodsFor: 'transactions' stamp: 'NME 10/17/2018 14:48:25'!
 initializeWithAll: aCollectionOfAccounts
@@ -178,10 +171,6 @@ initializeWithAll: aCollectionOfAccounts
 accounts _ aCollectionOfAccounts 
 
 ! !
-
-!Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 05:40:32'!
-manages: anAccount
-	"NOTA no hay que usar el ordered collection ya que cada account maneja solo 2 accounts o portfolios, hay que cambiar el codigo anterior" ! !
 
 !Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 05:25:35'!
 transactions 
@@ -274,8 +263,8 @@ doesManage: anAccount
 	^ self = anAccount 
 ! !
 
-!ReceptiveAccount methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:54'!
-hasRegistered: aTtransaction
+!ReceptiveAccount methodsFor: 'testing' stamp: 'NME 10/17/2018 15:39:16'!
+hasRegistered: aTransaction
 
-	^ transactions includes: aTtransaction 
+	^ transactions includes: aTransaction 
 ! !
