@@ -119,15 +119,20 @@ balance
 
 !classDefinition: #Portfolio category: #'Portfolio-Ejercicio'!
 SummarizingAccount subclass: #Portfolio
-	instanceVariableNames: ''
+	instanceVariableNames: 'accounts'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'balance' stamp: 'HernanWilkinson 7/13/2011 18:39'!
+!Portfolio methodsFor: 'balance' stamp: 'LR 10/17/2018 03:28:33'!
 balance
 
-	self shouldBeImplemented ! !
+	| balanceResult |
+	balanceResult  _ 0.
+	
+	accounts do: [:account | balanceResult _ balanceResult + account balance].
+	
+	^ balanceResult ! !
 
 
 !Portfolio methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:28'!
@@ -141,6 +146,12 @@ hasRegistered: aTransaction
 
 	self shouldBeImplemented ! !
 
+
+!Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 03:27:44'!
+initializeWith: leftAccount with: rightAccount
+	accounts _ OrderedCollection new.
+	accounts add: leftAccount.
+	accounts add: rightAccount.! !
 
 !Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:39'!
 transactions 
@@ -158,10 +169,10 @@ transactionsOf: anAccount
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'HAW 5/8/2018 16:10:00'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'LR 10/17/2018 03:25:12'!
 with: leftAccount with: rightAccount
 
-	self shouldBeImplemented ! !
+	^ Portfolio new initializeWith: leftAccount with: rightAccount .! !
 
 !Portfolio class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:41'!
 withAll: aCollectionOfAccounts
@@ -206,10 +217,15 @@ transactions
 	^ transactions copy! !
 
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'HAW 10/11/2018 16:51:30'!
+!ReceptiveAccount methodsFor: 'balance' stamp: 'LR 10/17/2018 03:26:35'!
 balance
-
-	self shouldBeImplemented ! !
+	
+	| balanceResult |
+	balanceResult  _ 0.
+	
+	transactions do: [:transaction | balanceResult _ balanceResult + transaction value].
+	
+	^ balanceResult ! !
 
 
 !ReceptiveAccount methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:28'!
