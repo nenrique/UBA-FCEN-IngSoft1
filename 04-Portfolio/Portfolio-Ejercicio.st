@@ -5,6 +5,11 @@ Object subclass: #AccountTransaction
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
+!AccountTransaction methodsFor: 'value' stamp: 'NME 10/17/2018 14:16:01'!
+realValue 
+
+	self subclassResponsibility ! !
+
 !AccountTransaction methodsFor: 'value' stamp: 'HernanWilkinson 9/12/2011 12:25'!
 value 
 
@@ -44,6 +49,11 @@ initializeFor: aValue
 applyTransaction: aValue
 	^ aValue + (self value).! !
 
+!Deposit methodsFor: 'value' stamp: 'NME 10/17/2018 14:14:28'!
+realValue
+
+	^ value! !
+
 !Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
 value
 
@@ -77,6 +87,11 @@ initializeFor: aValue
 
 	value := aValue ! !
 
+
+!Withdraw methodsFor: 'value' stamp: 'NME 10/17/2018 14:15:47'!
+realValue
+
+	^  value negated! !
 
 !Withdraw methodsFor: 'value' stamp: 'LR 10/17/2018 03:53:12'!
 value
@@ -132,21 +147,17 @@ SummarizingAccount subclass: #Portfolio
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
 
-!Portfolio methodsFor: 'balance' stamp: 'LR 10/17/2018 03:28:33'!
+!Portfolio methodsFor: 'balance' stamp: 'NME 10/17/2018 14:08:44'!
 balance
 
-	| balanceResult |
-	balanceResult  _ 0.
-	
-	accounts do: [:account | balanceResult _ balanceResult + account balance].
-	
-	^ balanceResult ! !
+
+ ^accounts sum: [ :account | account balance ].! !
 
 
-!Portfolio methodsFor: 'testing' stamp: 'LR 10/17/2018 05:21:09'!
+!Portfolio methodsFor: 'testing' stamp: 'NME 10/17/2018 14:31:12'!
 doesManage: anAccount
 
-	^ accounts includes: anAccount .! !
+	^self = anAccount or: [accounts anySatisfy: [:managedAccount| managedAccount doesManage: anAccount ]].! !
 
 !Portfolio methodsFor: 'testing' stamp: 'LR 10/17/2018 05:20:17'!
 hasRegistered: aTransaction
@@ -155,11 +166,18 @@ hasRegistered: aTransaction
 	^false.! !
 
 
-!Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 03:27:44'!
+!Portfolio methodsFor: 'transactions' stamp: 'NME 10/17/2018 14:48:14'!
 initializeWith: leftAccount with: rightAccount
 	accounts _ OrderedCollection new.
 	accounts add: leftAccount.
 	accounts add: rightAccount.! !
+
+!Portfolio methodsFor: 'transactions' stamp: 'NME 10/17/2018 14:48:25'!
+initializeWithAll: aCollectionOfAccounts
+
+accounts _ aCollectionOfAccounts 
+
+! !
 
 !Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 05:40:32'!
 manages: anAccount
@@ -175,10 +193,12 @@ transactions
 	
 	^ transactions.! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 05:37:36'!
+!Portfolio methodsFor: 'transactions' stamp: 'NME 10/17/2018 14:34:31'!
 transactionsOf: anAccount 
 	
-	(self manages: anAccount) ifTrue: [^ anAccount transactions].! !
+	(self doesManage: anAccount) ifTrue: [^ anAccount transactions].
+	
+	^self error: self class accountNotManagedMessageDescription.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -186,15 +206,23 @@ transactionsOf: anAccount
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'LR 10/17/2018 03:25:12'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'NME 10/17/2018 14:58:57'!
 with: leftAccount with: rightAccount
 
-	^ Portfolio new initializeWith: leftAccount with: rightAccount .! !
+|aCollectionOfAccounts|
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:41'!
+aCollectionOfAccounts _ OrderedCollection with: leftAccount with: rightAccount .
+
+(leftAccount doesManage: rightAccount ) ifFalse: [^self withAll: aCollectionOfAccounts].
+
+	self error: self accountAlreadyManagedErrorMessage.! !
+
+!Portfolio class methodsFor: 'instance creation' stamp: 'NME 10/17/2018 14:50:40'!
 withAll: aCollectionOfAccounts
 
-	self shouldBeImplemented ! !
+^self new initializeWithAll: aCollectionOfAccounts .
+
+! !
 
 
 !Portfolio class methodsFor: 'error messages' stamp: 'HAW 5/8/2018 16:08:43'!
@@ -234,15 +262,10 @@ transactions
 	^ transactions copy! !
 
 
-!ReceptiveAccount methodsFor: 'balance' stamp: 'LR 10/17/2018 05:11:52'!
+!ReceptiveAccount methodsFor: 'balance' stamp: 'NME 10/17/2018 14:14:08'!
 balance
-	
-	| balanceResult |
-	balanceResult  _ 0.
-	
-	transactions do: [:transaction | balanceResult _ transaction applyTransaction: balanceResult].
-	
-	^ balanceResult ! !
+
+	^ transactions inject: 0 into:[:sum :transaction | sum+ transaction realValue]. ! !
 
 
 !ReceptiveAccount methodsFor: 'testing' stamp: 'HAW 10/11/2018 16:53:28'!
