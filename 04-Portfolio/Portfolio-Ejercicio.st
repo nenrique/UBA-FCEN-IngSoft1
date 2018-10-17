@@ -161,6 +161,10 @@ initializeWith: leftAccount with: rightAccount
 	accounts add: leftAccount.
 	accounts add: rightAccount.! !
 
+!Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 05:40:32'!
+manages: anAccount
+	"NOTA no hay que usar el ordered collection ya que cada account maneja solo 2 accounts o portfolios, hay que cambiar el codigo anterior" ! !
+
 !Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 05:25:35'!
 transactions 
 
@@ -171,10 +175,10 @@ transactions
 	
 	^ transactions.! !
 
-!Portfolio methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:40'!
+!Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 05:37:36'!
 transactionsOf: anAccount 
-
-	self shouldBeImplemented ! !
+	
+	(self manages: anAccount) ifTrue: [^ anAccount transactions].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
