@@ -154,10 +154,10 @@ balance
  ^accounts sum: [ :account | account balance ].! !
 
 
-!Portfolio methodsFor: 'testing' stamp: 'NME 10/17/2018 14:31:12'!
+!Portfolio methodsFor: 'testing' stamp: 'LR 10/18/2018 00:14:27'!
 doesManage: anAccount
 
-	^self = anAccount or: [accounts anySatisfy: [:managedAccount| managedAccount doesManage: anAccount ]].! !
+	^self = anAccount or: [accounts anySatisfy: [ :managedAccount | (managedAccount doesManage: anAccount) or: (anAccount doesManage: managedAccount). ]].! !
 
 !Portfolio methodsFor: 'testing' stamp: 'NME 10/17/2018 15:38:20'!
 hasRegistered: aTransaction
@@ -165,10 +165,10 @@ hasRegistered: aTransaction
 ^accounts anySatisfy: [:anAccount| anAccount hasRegistered: aTransaction ].! !
 
 
-!Portfolio methodsFor: 'transactions' stamp: 'NME 10/17/2018 14:48:25'!
+!Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 18:41:59'!
 initializeWithAll: aCollectionOfAccounts
 
-accounts _ aCollectionOfAccounts 
+	accounts _ aCollectionOfAccounts 
 
 ! !
 
@@ -195,14 +195,13 @@ transactionsOf: anAccount
 Portfolio class
 	instanceVariableNames: ''!
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'NME 10/17/2018 14:58:57'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'LR 10/18/2018 00:11:42'!
 with: leftAccount with: rightAccount
 
-|aCollectionOfAccounts|
+	|aCollectionOfAccounts|
+	aCollectionOfAccounts _ OrderedCollection with: leftAccount with: rightAccount .
 
-aCollectionOfAccounts _ OrderedCollection with: leftAccount with: rightAccount .
-
-(leftAccount doesManage: rightAccount ) ifFalse: [^self withAll: aCollectionOfAccounts].
+	(leftAccount doesManage: rightAccount ) ifFalse: [^self withAll: aCollectionOfAccounts].
 
 	self error: self accountAlreadyManagedErrorMessage.! !
 
