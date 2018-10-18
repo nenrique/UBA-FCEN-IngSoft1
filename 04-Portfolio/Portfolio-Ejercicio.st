@@ -45,10 +45,6 @@ initializeFor: aValue
 	value := aValue ! !
 
 
-!Deposit methodsFor: 'value' stamp: 'LR 10/17/2018 05:11:15'!
-applyTransaction: aValue
-	^ aValue + (self value).! !
-
 !Deposit methodsFor: 'value' stamp: 'NME 10/17/2018 14:14:28'!
 realValue
 
@@ -77,10 +73,6 @@ AccountTransaction subclass: #Withdraw
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'Portfolio-Ejercicio'!
-
-!Withdraw methodsFor: 'initialization' stamp: 'LR 10/17/2018 05:11:24'!
-applyTransaction: aValue
-	^ aValue - (self value).! !
 
 !Withdraw methodsFor: 'initialization' stamp: 'HernanWilkinson 7/13/2011 18:46'!
 initializeFor: aValue
@@ -159,10 +151,10 @@ doesManage: anAccount
 
 	^self = anAccount or: [accounts anySatisfy: [ :managedAccount | (managedAccount doesManage: anAccount) or: (anAccount doesManage: managedAccount). ]].! !
 
-!Portfolio methodsFor: 'testing' stamp: 'NME 10/17/2018 15:38:20'!
+!Portfolio methodsFor: 'testing' stamp: 'LR 10/18/2018 05:51:58'!
 hasRegistered: aTransaction
 
-^accounts anySatisfy: [:anAccount| anAccount hasRegistered: aTransaction ].! !
+	^accounts anySatisfy: [:anAccount| anAccount hasRegistered: aTransaction ].! !
 
 
 !Portfolio methodsFor: 'transactions' stamp: 'LR 10/17/2018 18:41:59'!
@@ -205,10 +197,10 @@ with: leftAccount with: rightAccount
 
 	self error: self accountAlreadyManagedErrorMessage.! !
 
-!Portfolio class methodsFor: 'instance creation' stamp: 'NME 10/17/2018 14:50:40'!
+!Portfolio class methodsFor: 'instance creation' stamp: 'LR 10/18/2018 05:52:15'!
 withAll: aCollectionOfAccounts
 
-^self new initializeWithAll: aCollectionOfAccounts .
+	^self new initializeWithAll: aCollectionOfAccounts .
 
 ! !
 
