@@ -5,6 +5,12 @@ Object subclass: #AccountTransaction
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
+!AccountTransaction methodsFor: 'print' stamp: 'nme 10/22/2018 13:29:39'!
+print
+
+	^self subclassResponsibility.! !
+
+
 !AccountTransaction methodsFor: 'evaluating' stamp: 'HAW 10/18/2018 20:20:37'!
 affectBalance: currentBalance  
 
@@ -38,6 +44,64 @@ register: aValue on: account
 	^ transaction! !
 
 
+!classDefinition: #CertificateOfDeposit category: #'PortfolioTreePrinter-Ejercicio'!
+AccountTransaction subclass: #CertificateOfDeposit
+	instanceVariableNames: 'value days interesRate'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 15:55:12'!
+affectBalance: currentBalance
+
+	^currentBalance - value! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 16:04:40'!
+earning
+
+	^100* ((interesRate)/360)*days.! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 15:47:36'!
+initializeFor:anAmount during:aNumberOfDays at:anInteresRate
+
+	value _ anAmount.
+	days _ aNumberOfDays .
+	interesRate _ anInteresRate.! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 16:11:41'!
+print
+
+
+	^'Plazo fijo por ', value printString, ' durante ', days printString, ' dias a una tna de ', (100*interesRate) printString,'%'! !
+
+!CertificateOfDeposit methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 15:55:32'!
+value
+
+	^value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CertificateOfDeposit class' category: #'PortfolioTreePrinter-Ejercicio'!
+CertificateOfDeposit class
+	instanceVariableNames: ''!
+
+!CertificateOfDeposit class methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 15:46:15'!
+for:anAmount during:aNumberOfDays at:anInteresRate 
+
+	^self new initializeFor:anAmount during:aNumberOfDays at:anInteresRate.! !
+
+!CertificateOfDeposit class methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 15:49:39'!
+register:anAmount during:aNumberOfDays at:anInteresRate on: anAccount
+
+	|transaction|
+	
+	transaction _ self for:anAmount during:aNumberOfDays at:anInteresRate.
+	
+	anAccount register: transaction.
+	
+	^transaction .! !
+
+
 !classDefinition: #Deposit category: #'PortfolioTreePrinter-Ejercicio'!
 AccountTransaction subclass: #Deposit
 	instanceVariableNames: 'value'
@@ -49,6 +113,12 @@ AccountTransaction subclass: #Deposit
 initializeFor: aValue
 
 	value := aValue ! !
+
+
+!Deposit methodsFor: 'print' stamp: 'nme 10/22/2018 13:28:54'!
+print
+
+	^'Deposito por ', (self affectBalance: 0) printString ! !
 
 
 !Deposit methodsFor: 'value' stamp: 'HAW 10/18/2018 20:37:28'!
@@ -94,6 +164,11 @@ AccountTransaction subclass: #TransferLeg
 initializeRelatedTo: aTransfer
 
 	transfer _ aTransfer.! !
+
+!TransferLeg methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 14:53:20'!
+print
+
+	^'Transferencia por ', (self affectBalance: 0) printString ! !
 
 !TransferLeg methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:41:16'!
 transfer
@@ -160,6 +235,11 @@ initializeFor: aValue
 affectBalance: currentBalance
 
 	^currentBalance - value! !
+
+!Withdraw methodsFor: 'value' stamp: 'nme 10/22/2018 14:51:54'!
+print
+
+	^'Extraccion por ', (value) printString ! !
 
 !Withdraw methodsFor: 'value' stamp: 'HernanWilkinson 7/14/2011 05:54'!
 value
@@ -342,16 +422,41 @@ balance
 
 	^ transactions inject: 0 into: [ :balance :transaction | transaction affectBalance: balance ]! !
 
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'nme 10/22/2018 16:03:06'!
+investmentEarnings
+
+	^( transactions select:[:transaction | transaction isKindOf:CertificateOfDeposit ]) inject: 0 
+	into: [:earning :transaction |earning+ transaction earning ] .! !
+
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'nme 10/22/2018 15:58:37'!
+investmentNet
+
+	^( transactions select:[:transaction | transaction isKindOf:CertificateOfDeposit]) inject: 0 
+	into: [:transfers :transaction | transaction value + transfers ] .! !
+
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 register: aTransaction
 
 	transactions add: aTransaction 
 ! !
 
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'nme 10/22/2018 13:25:38'!
+summaryLines
+
+	^transactions inject: OrderedCollection new 
+	into: [:line :transaction | line add: transaction print. 
+		line]! !
+
 !ReceptiveAccount methodsFor: 'transactions' stamp: 'HernanWilkinson 7/13/2011 18:37'!
 transactions 
 
 	^ transactions copy! !
+
+!ReceptiveAccount methodsFor: 'transactions' stamp: 'nme 10/22/2018 15:22:07'!
+transferNet
+
+	^( transactions select:[:transaction | transaction isKindOf:TransferLeg]) inject: 0 
+	into: [:transfers :transaction | transaction affectBalance: transfers ] .! !
 
 
 !ReceptiveAccount methodsFor: 'testing' stamp: 'HAW 10/18/2018 16:31:24'!
