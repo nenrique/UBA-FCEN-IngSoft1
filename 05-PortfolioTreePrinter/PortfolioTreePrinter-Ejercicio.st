@@ -5,8 +5,8 @@ Object subclass: #AccountTransaction
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!AccountTransaction methodsFor: 'evaluating' stamp: 'HAW 10/18/2018 18:48:48'!
-affectBalance: currentBalance
+!AccountTransaction methodsFor: 'evaluating' stamp: 'HAW 10/18/2018 20:20:37'!
+affectBalance: currentBalance  
 
 	self subclassResponsibility ! !
 
@@ -21,15 +21,21 @@ value
 AccountTransaction class
 	instanceVariableNames: ''!
 
-!AccountTransaction class methodsFor: 'instance creation' stamp: 'HernanWilkinson 7/13/2011 18:38'!
+!AccountTransaction class methodsFor: 'instance creation' stamp: 'HAW 10/18/2018 21:06:37'!
+for: anAmount
+
+	self subclassResponsibility ! !
+
+
+!AccountTransaction class methodsFor: 'registering' stamp: 'HAW 10/18/2018 19:48:18'!
 register: aValue on: account
 
-	| withdraw |
+	| transaction |
 	
-	withdraw := self for: aValue.
-	account register: withdraw.
+	transaction := self for: aValue.
+	account register: transaction.
 		
-	^ withdraw! !
+	^ transaction! !
 
 
 !classDefinition: #Deposit category: #'PortfolioTreePrinter-Ejercicio'!
@@ -45,10 +51,10 @@ initializeFor: aValue
 	value := aValue ! !
 
 
-!Deposit methodsFor: 'value' stamp: 'HAW 10/18/2018 18:49:00'!
-affectBalance: currentBalance
+!Deposit methodsFor: 'value' stamp: 'HAW 10/18/2018 20:37:28'!
+affectBalance: currentBalance  
 
-	^currentBalance + value! !
+	^currentBalance + self value! !
 
 !Deposit methodsFor: 'value' stamp: 'HernanWilkinson 7/13/2011 18:38'!
 value
@@ -79,26 +85,62 @@ register: aValue on: account
 
 !classDefinition: #TransferLeg category: #'PortfolioTreePrinter-Ejercicio'!
 AccountTransaction subclass: #TransferLeg
+	instanceVariableNames: 'transfer'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTreePrinter-Ejercicio'!
+
+!TransferLeg methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:32:45'!
+initializeRelatedTo: aTransfer
+
+	transfer _ aTransfer.! !
+
+!TransferLeg methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:41:16'!
+transfer
+
+	^transfer! !
+
+!TransferLeg methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:41:28'!
+value
+
+	^transfer value! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'TransferLeg class' category: #'PortfolioTreePrinter-Ejercicio'!
+TransferLeg class
+	instanceVariableNames: ''!
+
+!TransferLeg class methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:32:12'!
+relatedTo: aTransfer
+
+	^self new initializeRelatedTo: aTransfer.! !
+
+
+!classDefinition: #TransferDeposit category: #'PortfolioTreePrinter-Ejercicio'!
+TransferLeg subclass: #TransferDeposit
 	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
+!TransferDeposit methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:42:06'!
+affectBalance: currentBalance
+
+	^currentBalance + self value.! !
+
 
-!classDefinition: #DepositLeg category: #'PortfolioTreePrinter-Ejercicio'!
-TransferLeg subclass: #DepositLeg
-	instanceVariableNames: 'transfer'
+!classDefinition: #TransferWithdraw category: #'PortfolioTreePrinter-Ejercicio'!
+TransferLeg subclass: #TransferWithdraw
+	instanceVariableNames: ''
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-
-!classDefinition: #WithdrawLeg category: #'PortfolioTreePrinter-Ejercicio'!
-TransferLeg subclass: #WithdrawLeg
-	instanceVariableNames: 'transfer'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'PortfolioTreePrinter-Ejercicio'!
+!TransferWithdraw methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:42:40'!
+affectBalance:currentBalance
+
+	^currentBalance - self value.! !
 
 
 !classDefinition: #Withdraw category: #'PortfolioTreePrinter-Ejercicio'!
@@ -327,25 +369,32 @@ hasRegistered: aTtransaction
 
 !classDefinition: #Transfer category: #'PortfolioTreePrinter-Ejercicio'!
 Object subclass: #Transfer
-	instanceVariableNames: 'depositLeg withdrawLeg'
+	instanceVariableNames: 'value depositLeg withdrawLeg'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!Transfer methodsFor: 'as yet unclassified' stamp: 'nme 10/18/2018 20:03:41'!
+!Transfer methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:22:34'!
 depositLeg
 
-^ to.! !
+^ depositLeg.! !
 
-!Transfer methodsFor: 'as yet unclassified' stamp: 'nme 10/18/2018 19:38:52'!
-initializeWithA:deposit from:withdraw for:anAmount
+!Transfer methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:27:40'!
+initializeOf: anAmount
 
 	value _ anAmount.
-	from _ withdraw.
-	to _ deposit.! !
+	depositLeg _ TransferDeposit relatedTo: self.
+	withdrawLeg _ TransferWithdraw relatedTo:self.! !
 
-!Transfer methodsFor: 'as yet unclassified' stamp: 'nme 10/18/2018 20:06:24'!
-withdrawLeg! !
+!Transfer methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:43:13'!
+value
+
+	^ value.! !
+
+!Transfer methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:22:27'!
+withdrawLeg
+
+	^withdrawLeg.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -353,20 +402,20 @@ withdrawLeg! !
 Transfer class
 	instanceVariableNames: ''!
 
-!Transfer class methodsFor: 'as yet unclassified' stamp: 'nme 10/18/2018 19:37:49'!
-from:deposit to:withdraw for:anAmount
+!Transfer class methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:45:40'!
+of: anAmount
 
-self new initializeWithA:deposit from:withdraw for:anAmount .! !
+	^self new initializeOf: anAmount .! !
 
-!Transfer class methodsFor: 'as yet unclassified' stamp: 'nme 10/18/2018 21:03:12'!
+!Transfer class methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 12:21:01'!
 registerFrom:fromAccount to:toAccount for:anAmount 
 
 
 
-	| withdraw deposit| 
+	| transfer| 
 	
-	deposit _ DepositLeg with: anAmount.
-	withdraw _ WithdrawLeg with: anAmount.
+	transfer _ self of:anAmount.
+	fromAccount register: transfer withdrawLeg.
+	toAccount register: transfer depositLeg.
 	
-	^self from:deposit to:withdraw.
-	! !
+	^transfer! !
