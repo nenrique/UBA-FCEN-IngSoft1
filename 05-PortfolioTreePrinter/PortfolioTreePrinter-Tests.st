@@ -528,30 +528,30 @@ test29ReversePortfolioTreePrinterPrintsTheCompositeStartingFromTheLeaves
 	! !
 
 
-!PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 13:27:44'!
+!PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 19:45:31'!
 accountSummaryLinesOf: aReceptiveAccount 
 	
-	^aReceptiveAccount summaryLines.! !
+	^ (AccountSummaryLines of: aReceptiveAccount) summary! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 15:07:53'!
+!PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 19:46:45'!
 accountTransferNetOf: aReceptiveAccount 
 	
-	^aReceptiveAccount transferNet.! !
+	^ (AccountTransferNet of: aReceptiveAccount) transfer.! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 16:00:49'!
+!PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 20:08:47'!
 investmentEarningsOf: aReceptiveAccount 
 	
-	^aReceptiveAccount investmentEarnings.! !
+	^(AccountInvestmentEarnings of:aReceptiveAccount ) earning .! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 15:53:03'!
+!PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 20:13:03'!
 investmentNetOf: aReceptiveAccount 
 	
-	^aReceptiveAccount investmentNet.! !
+	^(AccountInvestmentNet of:aReceptiveAccount ) investment.! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 20:34:12'!
 portofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
 	
-	self shouldBeImplemented ! !
+	^ ( SummarizingVisitor of: aPortfolio with: aDictionary ) depthFirstTraversal ! !
 
 !PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 15:38:06'!
 registerCertificateOfDepositOf: anAmount during: aNumberOfDays at: anInteresRate on: anAccount
@@ -563,7 +563,7 @@ registerTransferOf: anAmount from: fromAccount to: toAccount
 
 ^Transfer registerFrom:fromAccount to:toAccount for:anAmount.! !
 
-!PortfolioTest methodsFor: 'test support' stamp: 'HernanWilkinson 9/6/2016 19:43'!
+!PortfolioTest methodsFor: 'test support' stamp: 'nme 10/22/2018 20:55:22'!
 reversePortofolioTreeOf: aPortfolio namingAccountWith: aDictionary 
 	
-	self shouldBeImplemented ! !
+	^ ( SummarizingVisitorReverse of: aPortfolio with: aDictionary ) leafTraversal. ! !
