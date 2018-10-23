@@ -124,7 +124,6 @@ initializeFor: aValue
 	value := aValue ! !
 
 
-
 !Deposit methodsFor: 'value' stamp: 'nme 10/22/2018 19:39:17'!
 accept:aVisitor
 
@@ -317,39 +316,41 @@ AccountVisitor subclass: #AccountInvestmentEarnings
 	poolDictionaries: ''
 	category: 'PortfolioTreePrinter-Ejercicio'!
 
-!AccountInvestmentEarnings methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 20:09:18'!
-earning
-
-	value _ 0.
-	account transactions do: [ :transaction | (transaction accept: self)].
-	^ value.! !
-
-!AccountInvestmentEarnings methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 20:08:21'!
-initializeOf: aReceptiveAccount
-	
-	account _ aReceptiveAccount ! !
-
-!AccountInvestmentEarnings methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 20:10:42'!
+!AccountInvestmentEarnings methodsFor: 'visitor' stamp: 'nme 10/22/2018 20:10:42'!
 visitCertificateOfDepositFor:aCof
 
 value _  value + aCof earning 
 ! !
 
-!AccountInvestmentEarnings methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 20:02:50'!
+!AccountInvestmentEarnings methodsFor: 'visitor' stamp: 'nme 10/22/2018 20:02:50'!
 visitDepositFor:aDeposit
 ! !
 
-!AccountInvestmentEarnings methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 20:04:04'!
+!AccountInvestmentEarnings methodsFor: 'visitor' stamp: 'nme 10/22/2018 20:04:04'!
 visitTransferDepositFor:aTransferDeposit
 ! !
 
-!AccountInvestmentEarnings methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 20:03:27'!
+!AccountInvestmentEarnings methodsFor: 'visitor' stamp: 'nme 10/22/2018 20:03:27'!
 visitTransferWithdrawFor:aTransferWithdraw
 ! !
 
-!AccountInvestmentEarnings methodsFor: 'as yet unclassified' stamp: 'nme 10/22/2018 20:03:10'!
+!AccountInvestmentEarnings methodsFor: 'visitor' stamp: 'nme 10/22/2018 20:03:10'!
 visitWithdrawFor:aWithdraw
 ! !
+
+
+!AccountInvestmentEarnings methodsFor: 'initialization' stamp: 'nme 10/22/2018 20:08:21'!
+initializeOf: aReceptiveAccount
+	
+	account _ aReceptiveAccount ! !
+
+
+!AccountInvestmentEarnings methodsFor: 'operations' stamp: 'nme 10/22/2018 20:09:18'!
+earning
+
+	value _ 0.
+	account transactions do: [ :transaction | (transaction accept: self)].
+	^ value.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
