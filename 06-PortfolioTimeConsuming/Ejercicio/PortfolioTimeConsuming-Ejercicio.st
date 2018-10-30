@@ -11,14 +11,16 @@ initializeFor: aReceptiveAccount
 	account := aReceptiveAccount ! !
 
 
-!AccountSummaryWithAllInvestmentInformation methodsFor: 'evaluating' stamp: 'HernanWilkinson 7/17/2011 23:58'!
+!AccountSummaryWithAllInvestmentInformation methodsFor: 'evaluating' stamp: 'LR 10/29/2018 21:01:51'!
 lines 
 
-	| lines investmentEarnings |
+	| lines investmentEarnings f1 f2 |
 	
-	investmentEarnings := InvestmentNetVisitor for: account.
-	lines := (AccountSummaryWithInvestmentEarnings for: account) lines.
-	lines add: 'Inversiones por ', investmentEarnings value printString.
+	f1 _ Future launchWith: [ (InvestmentNetVisitor for: account) value printString. ].
+	f2 _ Future launchWith: [ (AccountSummaryWithInvestmentEarnings for: account) lines. ].
+	investmentEarnings _ f1 value.
+	lines _ f2 value.
+	lines add: 'Inversiones por ', investmentEarnings.
 	
 	 ^ lines! !
 
@@ -47,14 +49,17 @@ initializeFor: aReceptiveAccount
 	account := aReceptiveAccount ! !
 
 
-!AccountSummaryWithInvestmentEarnings methodsFor: 'evaluating' stamp: 'HernanWilkinson 7/17/2011 23:53'!
+!AccountSummaryWithInvestmentEarnings methodsFor: 'evaluating' stamp: 'LR 10/29/2018 21:00:27'!
 lines 
 
-	| lines investmentEarnings |
+	| lines investmentEarnings f1 f2|
+
+	f1 _ Future launchWith: [ (InvestmentEarningVisitor for: account) value printString ].
+	f2 _ Future launchWith: [ (AccountSummary for: account) lines. ].
 	
-	investmentEarnings := InvestmentEarningVisitor for: account.
-	lines := (AccountSummary for: account) lines.
-	lines add: 'Ganancias por ', investmentEarnings value printString.
+	investmentEarnings _ f1 value.
+	lines _ f2 value.
+	lines add: 'Ganancias por ', investmentEarnings.
 	
 	 ^ lines! !
 
@@ -670,6 +675,36 @@ InvestmentNetVisitor class
 for: aReceptiveAccount 
 	
 	^ self new initializeFor: aReceptiveAccount ! !
+
+
+!classDefinition: #Future category: #'PortfolioTimeConsuming-Ejercicio'!
+Object subclass: #Future
+	instanceVariableNames: 'result sem'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'PortfolioTimeConsuming-Ejercicio'!
+
+!Future methodsFor: 'as yet unclassified' stamp: 'LR 10/29/2018 20:45:33'!
+initializeWith: aBlock
+	 sem _ Semaphore new.
+
+	[ result _ (aBlock value).
+	  sem signal. ] fork.! !
+
+!Future methodsFor: 'as yet unclassified' stamp: 'LR 10/29/2018 20:25:19'!
+value
+	sem wait.
+	^ result.! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Future class' category: #'PortfolioTimeConsuming-Ejercicio'!
+Future class
+	instanceVariableNames: ''!
+
+!Future class methodsFor: 'as yet unclassified' stamp: 'LR 10/29/2018 20:46:46'!
+launchWith: aBlock
+	^ self new initializeWith: aBlock.! !
 
 
 !classDefinition: #ReversePortfolioTreePrinter category: #'PortfolioTimeConsuming-Ejercicio'!
