@@ -176,6 +176,86 @@ test10ONotTakeXPalces
 				self assert: 1 equals: game fichasX size.
 				self assert: game fichasO isEmpty ].! !
 
+!TerniLapilliTests methodsFor: 'as yet unclassified' stamp: 'NME 11/4/2018 23:39:49'!
+test11WithoutWinner
+
+	|game |
+	
+	game := TerniLapilli new.
+	
+	game putXAt:1@2.
+	game putOAt: 2@2.
+	game putXAt: 2@1.
+	game putOAt: 2@3.
+	game putXAt: 3@2.
+	game putOAt: 3@3.
+	
+	self assert: 3 equals: game fichasX size.
+	self assert: 3 equals: game fichasO size.
+	
+	self assert: (game fichasX includes: 1@2).
+	self assert: (game fichasX includes: 2@1).
+	self assert: (game fichasX includes: 3@2).
+	
+	self assert: (game fichasO includes: 2@2).
+	self assert: (game fichasO includes: 2@3).
+	self assert: (game fichasO includes: 3@3).
+	
+	self deny: game XHasWon.
+	self deny: game OHasWon.! !
+
+!TerniLapilliTests methodsFor: 'as yet unclassified' stamp: 'NME 11/4/2018 23:51:06'!
+test12XWinWithFirstRow
+
+	|game |
+	
+	game := TerniLapilli new.
+	
+	game putXAt:1@1.
+	game putOAt: 2@2.
+	game putXAt: 1@2.
+	game putOAt: 2@3.
+	game putXAt: 1@3.
+	
+	self assert: 3 equals: game fichasX size.
+	self assert: 2 equals: game fichasO size.
+	
+	self assert: (game fichasX includes: 1@1).
+	self assert: (game fichasX includes: 1@2).
+	self assert: (game fichasX includes: 1@3).
+	
+	self assert: (game fichasO includes: 2@2).
+	self assert: (game fichasO includes: 2@3).
+	
+	self assert: game XHasWon.
+	self deny: game OHasWon.! !
+
+!TerniLapilliTests methodsFor: 'as yet unclassified' stamp: 'NME 11/5/2018 00:08:44'!
+test13XWinWithSecondRow
+
+	|game |
+	
+	game := TerniLapilli new.
+	
+	game putXAt:2@1.
+	game putOAt: 1@2.
+	game putXAt: 2@2.
+	game putOAt: 1@1.
+	game putXAt: 2@3.
+	
+	self assert: 3 equals: game fichasX size.
+	self assert: 2 equals: game fichasO size.
+	
+	self assert: (game fichasX includes: 2@1).
+	self assert: (game fichasX includes: 2@2).
+	self assert: (game fichasX includes: 2@3).
+	
+	self assert: (game fichasO includes: 1@2).
+	self assert: (game fichasO includes: 1@1).
+	
+	self assert: game XHasWon.
+	self deny: game OHasWon.! !
+
 
 !classDefinition: #TerniLapilli category: #'TerniLapilli-Ejercicio'!
 Object subclass: #TerniLapilli
@@ -201,7 +281,7 @@ initialize
 	next _ #x! !
 
 
-!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/4/2018 22:12:28'!
+!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/4/2018 23:59:15'!
 putOAt: aPosition
 
 	next = #o ifFalse: [ self error: self class notOTurnErrorMessage ].
@@ -210,14 +290,61 @@ putOAt: aPosition
 	fichasO add:aPosition.
 	next _ #x.! !
 
-!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/4/2018 22:07:08'!
+!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/4/2018 23:59:43'!
 putXAt: aPosition
 	
 	next = #x ifFalse: [ self error: self class notXTurnErrorMessage ].
 	(fichasX includes: aPosition) ifTrue: [ self error: self class takenPositionErrorMessage ].
 	(fichasO includes:aPosition) ifTrue: [self error: self class takenPositionErrorMessage].
 	fichasX add: aPosition.
+	
+		
+	(self hasWin: fichasX) ifTrue: [^winner _ #x].
 	next _ #o.! !
+
+
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/4/2018 23:57:33'!
+OHasWon
+	
+	^winner = #o! !
+
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/4/2018 23:57:12'!
+XHasWon
+	
+	^winner = #x! !
+
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/5/2018 00:12:01'!
+hasCompletedColumn: aSetOfPositions 
+
+	^(1 to:3) anySatisfy: [:y| (aSetOfPositions count: [:position| position y = y] ) = 3].
+	! !
+
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/5/2018 00:11:43'!
+hasCompletedRow: aSetOfPositions 
+
+	^(1 to:3) anySatisfy: [:x| (aSetOfPositions count: [:position| position x = x] ) = 3].
+	! !
+
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/5/2018 00:16:52'!
+hasDownDiagonal: aSetOfPositions 
+
+	^(1 to:3) allSatisfy: [:n| aSetOfPositions includes: n@(4-n)].
+	! !
+
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/5/2018 00:14:52'!
+hasUpDiagonal: aSetOfPositions 
+
+	^(1 to:3) allSatisfy: [:n| aSetOfPositions includes: n@n].
+	! !
+
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/5/2018 00:11:11'!
+hasWin:aSetOfPositions
+
+	
+	^(self hasCompletedColumn: aSetOfPositions) 
+		or: [(self hasCompletedRow: aSetOfPositions) 
+		or: [(self hasUpDiagonal: aSetOfPositions)
+		or: [self hasDownDiagonal: aSetOfPositions]]].! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
