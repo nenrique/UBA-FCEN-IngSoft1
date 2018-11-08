@@ -5,15 +5,15 @@ TestCase subclass: #TerniLapilliTests
 	poolDictionaries: ''
 	category: 'TerniLapilli-Ejercicio'!
 
-!TerniLapilliTests methodsFor: 'test' stamp: 'NME 11/4/2018 22:10:05'!
+!TerniLapilliTests methodsFor: 'test' stamp: 'LR 11/8/2018 01:11:56'!
 test01CreateNewGame
 
 	|juego|
 	
 	juego _ TerniLapilli new.
 	
-	self assert: juego fichasX isEmpty.
-	self assert:juego fichasO isEmpty.! !
+	self assert: juego isEmpty.
+! !
 
 !TerniLapilliTests methodsFor: 'test' stamp: 'nme 11/5/2018 19:30:45'!
 test02putX
@@ -721,31 +721,32 @@ Object subclass: #FinishedGameState
 	poolDictionaries: ''
 	category: 'TerniLapilli-Ejercicio'!
 
-!FinishedGameState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:24:21'!
-initializeWith:aGame
-
-	game _ aGame.
-! !
-
-!FinishedGameState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 22:16:57'!
+!FinishedGameState methodsFor: 'game moves' stamp: 'NME 11/7/2018 22:16:57'!
 putOAt:aPosition
 
 	^self error: game class gameFinishedErrorMessage.! !
 
-!FinishedGameState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 22:17:09'!
+!FinishedGameState methodsFor: 'game moves' stamp: 'NME 11/7/2018 22:17:09'!
 putXAt:aPosition
 
 	^self error: game class gameFinishedErrorMessage.! !
 
-!FinishedGameState methodsFor: 'as yet unclassified' stamp: 'NME 11/8/2018 00:00:23'!
+!FinishedGameState methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:00:23'!
 slideOFrom: anOldPosition to: aNewPosition
 
 self error: game class gameFinishedErrorMessage! !
 
-!FinishedGameState methodsFor: 'as yet unclassified' stamp: 'NME 11/8/2018 00:00:26'!
+!FinishedGameState methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:00:26'!
 slideXFrom: anOldPosition to: aNewPosition
 
 self error: game class gameFinishedErrorMessage! !
+
+
+!FinishedGameState methodsFor: 'initialization' stamp: 'NME 11/7/2018 23:24:21'!
+initializeWith:aGame
+
+	game _ aGame.
+! !
 
 
 !classDefinition: #WinnerO category: #'TerniLapilli-Ejercicio'!
@@ -755,12 +756,12 @@ FinishedGameState subclass: #WinnerO
 	poolDictionaries: ''
 	category: 'TerniLapilli-Ejercicio'!
 
-!WinnerO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 21:32:38'!
+!WinnerO methodsFor: 'game state' stamp: 'NME 11/7/2018 21:32:38'!
 OHasWon
 	
 	^true.! !
 
-!WinnerO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 21:32:45'!
+!WinnerO methodsFor: 'game state' stamp: 'NME 11/7/2018 21:32:45'!
 XHasWon
 	
 	^false.! !
@@ -773,12 +774,12 @@ FinishedGameState subclass: #WinnerX
 	poolDictionaries: ''
 	category: 'TerniLapilli-Ejercicio'!
 
-!WinnerX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 21:32:55'!
+!WinnerX methodsFor: 'game state' stamp: 'NME 11/7/2018 21:32:55'!
 OHasWon
 	
 	^false! !
 
-!WinnerX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 21:33:05'!
+!WinnerX methodsFor: 'game state' stamp: 'NME 11/7/2018 21:33:05'!
 XHasWon
 	
 	^true! !
@@ -791,27 +792,29 @@ Object subclass: #PlayingState
 	poolDictionaries: ''
 	category: 'TerniLapilli-Ejercicio'!
 
-!PlayingState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:34:02'!
-OHasWon
-	
-	^false! !
-
-!PlayingState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:33:58'!
-XHasWon
-	
-	^false! !
-
-!PlayingState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 21:36:00'!
+!PlayingState methodsFor: 'initialization' stamp: 'NME 11/7/2018 21:36:00'!
 initializeWith: aGame
 
 	game _ aGame.! !
 
-!PlayingState methodsFor: 'as yet unclassified' stamp: 'NME 11/8/2018 00:02:33'!
+
+!PlayingState methodsFor: 'game state' stamp: 'NME 11/7/2018 23:34:02'!
+OHasWon
+	
+	^false! !
+
+!PlayingState methodsFor: 'game state' stamp: 'NME 11/7/2018 23:33:58'!
+XHasWon
+	
+	^false! !
+
+
+!PlayingState methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:02:33'!
 slideOFrom: anOldPosition to: aNewPosition
 
 	self error:game class piecesToPutErrorMessage! !
 
-!PlayingState methodsFor: 'as yet unclassified' stamp: 'NME 11/8/2018 00:02:41'!
+!PlayingState methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:02:41'!
 slideXFrom: anOldPosition to: aNewPosition
 
 self error:game class piecesToPutErrorMessage! !
@@ -824,14 +827,14 @@ PlayingState subclass: #PlacingO
 	poolDictionaries: ''
 	category: 'TerniLapilli-Ejercicio'!
 
-!PlacingO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 22:01:40'!
+!PlacingO methodsFor: 'game moves' stamp: 'NME 11/7/2018 22:01:40'!
 putOAt:aPosition
 
 (game positionTaken:aPosition) ifTrue: [self error: game class takenPositionErrorMessage].
 game addAnOPosition:aPosition.
 game changeStateFromPlacingO.! !
 
-!PlacingO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:38:43'!
+!PlacingO methodsFor: 'game moves' stamp: 'NME 11/7/2018 23:38:43'!
 putXAt:aPlace
 
  self error: game class notXTurnErrorMessage! !
@@ -844,12 +847,12 @@ PlayingState subclass: #PlacingX
 	poolDictionaries: ''
 	category: 'TerniLapilli-Ejercicio'!
 
-!PlacingX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:36:57'!
+!PlacingX methodsFor: 'game moves' stamp: 'NME 11/7/2018 23:36:57'!
 putOAt:aPlace
 
  self error: game class notOTurnErrorMessage! !
 
-!PlacingX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 22:01:13'!
+!PlacingX methodsFor: 'game moves' stamp: 'NME 11/7/2018 22:01:13'!
 putXAt:aPosition
 
 (game positionTaken:aPosition) ifTrue: [self error: game class takenPositionErrorMessage].
@@ -864,12 +867,12 @@ PlayingState subclass: #SlidingO
 	poolDictionaries: ''
 	category: 'TerniLapilli-Ejercicio'!
 
-!SlidingO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:09:45'!
+!SlidingO methodsFor: 'game moves' stamp: 'NME 11/7/2018 23:09:45'!
 putOAt:aPosition
 
 	self error: game class withoutPiecesErrorMessage .! !
 
-!SlidingO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:17:11'!
+!SlidingO methodsFor: 'game moves' stamp: 'NME 11/7/2018 23:17:11'!
 slideOFrom: anOldPosition to: aNewPosition
 	
 	(game positionTaken: aNewPosition) ifTrue: [self error:game class takenPositionErrorMessage ].
@@ -877,7 +880,7 @@ slideOFrom: anOldPosition to: aNewPosition
 	game removeAnOPosition:anOldPosition.
 	game changeStateFromSlidingO! !
 
-!SlidingO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:37:41'!
+!SlidingO methodsFor: 'game moves' stamp: 'NME 11/7/2018 23:37:41'!
 slideXFrom: anOldPosition to: aNewPosition 
 	 self error: game class notXTurnErrorMessage! !
 
@@ -889,16 +892,16 @@ PlayingState subclass: #SlidingX
 	poolDictionaries: ''
 	category: 'TerniLapilli-Ejercicio'!
 
-!SlidingX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:09:50'!
+!SlidingX methodsFor: 'game moves' stamp: 'NME 11/7/2018 23:09:50'!
 putXAt:aPosition
 
 	self error: game class withoutPiecesErrorMessage .! !
 
-!SlidingX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:37:51'!
+!SlidingX methodsFor: 'game moves' stamp: 'NME 11/7/2018 23:37:51'!
 slideOFrom: anOldPosition to: aNewPosition 
 	 self error: game class notOTurnErrorMessage! !
 
-!SlidingX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:21:52'!
+!SlidingX methodsFor: 'game moves' stamp: 'NME 11/7/2018 23:21:52'!
 slideXFrom: anOldPosition to: aNewPosition 
 
 (game positionTaken: aNewPosition) ifTrue: [self error:game class takenPositionErrorMessage ].
@@ -921,6 +924,10 @@ fichasO
 !TerniLapilli methodsFor: 'access' stamp: 'NME 11/7/2018 21:29:28'!
 fichasX
 	^fichasX copy! !
+
+!TerniLapilli methodsFor: 'access' stamp: 'LR 11/8/2018 01:11:11'!
+isEmpty
+	^ fichasX isEmpty and: fichasO isEmpty.! !
 
 !TerniLapilli methodsFor: 'access' stamp: 'NME 11/8/2018 00:04:31'!
 positionTaken:aPosition
