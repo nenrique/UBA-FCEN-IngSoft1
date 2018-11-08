@@ -688,10 +688,10 @@ test35CantSlideIfDidntPutAllPieces
 		 raise: Error - MessageNotUnderstood 	
 		withExceptionDo: [:anError| self assert: TerniLapilli piecesToPutErrorMessage equals: anError messageText ].! !
 
-!TerniLapilliTests methodsFor: 'test' stamp: 'nme 11/5/2018 21:31:13'!
+!TerniLapilliTests methodsFor: 'test' stamp: 'NME 11/8/2018 00:24:53'!
 test36SlidetoANonIllegalPosition
 
-"	|game |
+	|game |
 	
 	game := TerniLapilli new.
 	
@@ -711,7 +711,7 @@ test36SlidetoANonIllegalPosition
 	
 	self should: [game slideXFrom:3@1 to: 3@3.] 
 		 raise: Error - MessageNotUnderstood 	
-		withExceptionDo: [:anError| self assert: TerniLapilli illegalPositionErrorMessage equals: anError messageText ]."! !
+		withExceptionDo: [:anError| self assert: TerniLapilli illegalPositionErrorMessage equals: anError messageText ].! !
 
 
 !classDefinition: #FinishedGameState category: #'TerniLapilli-Ejercicio'!
@@ -951,21 +951,19 @@ putXAt: aPosition
 	gameState putXAt:aPosition.
 ! !
 
-!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:05:20'!
+!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:37:24'!
 slideOFrom: anOldPosition to: aNewPosition 
 	
 	
-	
+	(self isLegal: anOldPosition to:aNewPosition) ifFalse:[self error: self class illegalPositionErrorMessage].
 	(self inRange:aNewPosition) ifFalse:[self error:self class outOfRangeErrorMessage].
-	"(self isLegal: anOldPosition to:aNewPosition) ifFalse:[self error: self class illegalPositionErrorMessage]."
 		gameState slideOFrom: anOldPosition to: aNewPosition. ! !
 
-!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:05:24'!
+!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:29:20'!
 slideXFrom: anOldPosition to: aNewPosition 
 	
-	
+	(self isLegal: anOldPosition to:aNewPosition) ifFalse:[self error: self class illegalPositionErrorMessage].
 	(self inRange:aNewPosition) ifFalse:[self error:self class outOfRangeErrorMessage].
-	"(self isLegal: anOldPosition to:aNewPosition) ifFalse:[self error: self class illegalPositionErrorMessage]."
 	gameState slideXFrom: anOldPosition to: aNewPosition. 
 	! !
 
@@ -1018,10 +1016,21 @@ inRange: aPosition
 
 	^((1 to:3) anySatisfy: [:xRange| aPosition x= xRange]) and: ((1 to:3) anySatisfy: [:yRange| aPosition y= yRange])! !
 
-!TerniLapilli methodsFor: 'game states' stamp: 'nme 11/5/2018 21:28:06'!
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/8/2018 00:34:43'!
 isLegal: anOldPosition to: aNewPosition
 
-	^(aNewPosition x = (anOldPosition x +1) or: [aNewPosition x = (anOldPosition x -1)] ) and:[(aNewPosition y = (anOldPosition y+1) or: [aNewPosition x = (anOldPosition y -1)] )]! !
+	^(aNewPosition x = (anOldPosition x +1) 
+	or: [aNewPosition x = (anOldPosition x -1)]  
+	or:[aNewPosition x = (anOldPosition x)]) 
+	and:[(aNewPosition y = (anOldPosition y+1) or: [aNewPosition y = (anOldPosition y -1)] 
+		or: [aNewPosition y = (anOldPosition y )])]! !
+
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/8/2018 00:24:36'!
+isNotLegal: anOldPosition to: aNewPosition
+
+	^(aNewPosition x = (anOldPosition x +1) 
+	or: [aNewPosition x = (anOldPosition x -1)] ) 
+	and:[(aNewPosition y = (anOldPosition y+1) or: [aNewPosition y = (anOldPosition y -1)] )]! !
 
 
 !TerniLapilli methodsFor: 'position changes' stamp: 'NME 11/7/2018 23:28:34'!
