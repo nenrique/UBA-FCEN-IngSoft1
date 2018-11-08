@@ -485,7 +485,7 @@ test26NotXTurnSlide
 		raise: Error - MessageNotUnderstood 
 			withExceptionDo: [ :anError |self assert: TerniLapilli notXTurnErrorMessage equals: anError messageText]! !
 
-!TerniLapilliTests methodsFor: 'test' stamp: 'nme 11/5/2018 19:37:49'!
+!TerniLapilliTests methodsFor: 'test' stamp: 'NME 11/7/2018 23:59:04'!
 test27NotOTurnSlide
 
 	|game |
@@ -504,7 +504,7 @@ test27NotOTurnSlide
 	
 	self should:[game slideOFrom: 2@1 to:1@1 ]  
 		raise: Error - MessageNotUnderstood 
-			withExceptionDo: [ :anError |self assert: TerniLapilli notXTurnErrorMessage equals: anError messageText]! !
+			withExceptionDo: [ :anError |self assert: TerniLapilli notOTurnErrorMessage equals: anError messageText]! !
 
 !TerniLapilliTests methodsFor: 'test' stamp: 'nme 11/5/2018 19:40:32'!
 test28XWinByMoves
@@ -714,102 +714,271 @@ test36SlidetoANonIllegalPosition
 		withExceptionDo: [:anError| self assert: TerniLapilli illegalPositionErrorMessage equals: anError messageText ]."! !
 
 
-!classDefinition: #TerniLapilli category: #'TerniLapilli-Ejercicio'!
-Object subclass: #TerniLapilli
-	instanceVariableNames: 'fichasX fichasO next winner'
+!classDefinition: #FinishedGameState category: #'TerniLapilli-Ejercicio'!
+Object subclass: #FinishedGameState
+	instanceVariableNames: 'game'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli-Ejercicio'!
 
-!TerniLapilli methodsFor: 'access' stamp: 'NME 11/4/2018 20:34:01'!
+!FinishedGameState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:24:21'!
+initializeWith:aGame
+
+	game _ aGame.
+! !
+
+!FinishedGameState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 22:16:57'!
+putOAt:aPosition
+
+	^self error: game class gameFinishedErrorMessage.! !
+
+!FinishedGameState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 22:17:09'!
+putXAt:aPosition
+
+	^self error: game class gameFinishedErrorMessage.! !
+
+!FinishedGameState methodsFor: 'as yet unclassified' stamp: 'NME 11/8/2018 00:00:23'!
+slideOFrom: anOldPosition to: aNewPosition
+
+self error: game class gameFinishedErrorMessage! !
+
+!FinishedGameState methodsFor: 'as yet unclassified' stamp: 'NME 11/8/2018 00:00:26'!
+slideXFrom: anOldPosition to: aNewPosition
+
+self error: game class gameFinishedErrorMessage! !
+
+
+!classDefinition: #WinnerO category: #'TerniLapilli-Ejercicio'!
+FinishedGameState subclass: #WinnerO
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli-Ejercicio'!
+
+!WinnerO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 21:32:38'!
+OHasWon
+	
+	^true.! !
+
+!WinnerO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 21:32:45'!
+XHasWon
+	
+	^false.! !
+
+
+!classDefinition: #WinnerX category: #'TerniLapilli-Ejercicio'!
+FinishedGameState subclass: #WinnerX
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli-Ejercicio'!
+
+!WinnerX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 21:32:55'!
+OHasWon
+	
+	^false! !
+
+!WinnerX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 21:33:05'!
+XHasWon
+	
+	^true! !
+
+
+!classDefinition: #PlayingState category: #'TerniLapilli-Ejercicio'!
+Object subclass: #PlayingState
+	instanceVariableNames: 'game'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli-Ejercicio'!
+
+!PlayingState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:34:02'!
+OHasWon
+	
+	^false! !
+
+!PlayingState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:33:58'!
+XHasWon
+	
+	^false! !
+
+!PlayingState methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 21:36:00'!
+initializeWith: aGame
+
+	game _ aGame.! !
+
+!PlayingState methodsFor: 'as yet unclassified' stamp: 'NME 11/8/2018 00:02:33'!
+slideOFrom: anOldPosition to: aNewPosition
+
+	self error:game class piecesToPutErrorMessage! !
+
+!PlayingState methodsFor: 'as yet unclassified' stamp: 'NME 11/8/2018 00:02:41'!
+slideXFrom: anOldPosition to: aNewPosition
+
+self error:game class piecesToPutErrorMessage! !
+
+
+!classDefinition: #PlacingO category: #'TerniLapilli-Ejercicio'!
+PlayingState subclass: #PlacingO
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli-Ejercicio'!
+
+!PlacingO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 22:01:40'!
+putOAt:aPosition
+
+(game positionTaken:aPosition) ifTrue: [self error: game class takenPositionErrorMessage].
+game addAnOPosition:aPosition.
+game changeStateFromPlacingO.! !
+
+!PlacingO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:38:43'!
+putXAt:aPlace
+
+ self error: game class notXTurnErrorMessage! !
+
+
+!classDefinition: #PlacingX category: #'TerniLapilli-Ejercicio'!
+PlayingState subclass: #PlacingX
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli-Ejercicio'!
+
+!PlacingX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:36:57'!
+putOAt:aPlace
+
+ self error: game class notOTurnErrorMessage! !
+
+!PlacingX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 22:01:13'!
+putXAt:aPosition
+
+(game positionTaken:aPosition) ifTrue: [self error: game class takenPositionErrorMessage].
+game addAnXPosition:aPosition.
+game changeStateFromPlacingX.! !
+
+
+!classDefinition: #SlidingO category: #'TerniLapilli-Ejercicio'!
+PlayingState subclass: #SlidingO
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli-Ejercicio'!
+
+!SlidingO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:09:45'!
+putOAt:aPosition
+
+	self error: game class withoutPiecesErrorMessage .! !
+
+!SlidingO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:17:11'!
+slideOFrom: anOldPosition to: aNewPosition
+	
+	(game positionTaken: aNewPosition) ifTrue: [self error:game class takenPositionErrorMessage ].
+	game addAnOPosition: aNewPosition.
+	game removeAnOPosition:anOldPosition.
+	game changeStateFromSlidingO! !
+
+!SlidingO methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:37:41'!
+slideXFrom: anOldPosition to: aNewPosition 
+	 self error: game class notXTurnErrorMessage! !
+
+
+!classDefinition: #SlidingX category: #'TerniLapilli-Ejercicio'!
+PlayingState subclass: #SlidingX
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli-Ejercicio'!
+
+!SlidingX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:09:50'!
+putXAt:aPosition
+
+	self error: game class withoutPiecesErrorMessage .! !
+
+!SlidingX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:37:51'!
+slideOFrom: anOldPosition to: aNewPosition 
+	 self error: game class notOTurnErrorMessage! !
+
+!SlidingX methodsFor: 'as yet unclassified' stamp: 'NME 11/7/2018 23:21:52'!
+slideXFrom: anOldPosition to: aNewPosition 
+
+(game positionTaken: aNewPosition) ifTrue: [self error:game class takenPositionErrorMessage ].
+	game addAnXPosition: aNewPosition.
+	game removeAnXPosition:anOldPosition.
+	game changeStateFromSlidingX! !
+
+
+!classDefinition: #TerniLapilli category: #'TerniLapilli-Ejercicio'!
+Object subclass: #TerniLapilli
+	instanceVariableNames: 'fichasX fichasO gameState'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli-Ejercicio'!
+
+!TerniLapilli methodsFor: 'access' stamp: 'NME 11/7/2018 21:29:24'!
 fichasO
-	^fichasO ! !
+	^fichasO copy! !
 
-!TerniLapilli methodsFor: 'access' stamp: 'NME 11/4/2018 20:33:53'!
+!TerniLapilli methodsFor: 'access' stamp: 'NME 11/7/2018 21:29:28'!
 fichasX
-	^fichasX ! !
+	^fichasX copy! !
+
+!TerniLapilli methodsFor: 'access' stamp: 'NME 11/8/2018 00:04:31'!
+positionTaken:aPosition
+
+	^(fichasO includes: aPosition) or: [fichasX includes: aPosition]! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'nme 11/5/2018 18:45:11'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'NME 11/7/2018 23:25:01'!
 initialize
 
 	fichasX _ Set new.
 	fichasO _ Set new.
-	next _ #x! !
+	gameState _ PlacingX new initializeWith:self.! !
 
 
-!TerniLapilli methodsFor: 'game moves' stamp: 'nme 11/5/2018 20:37:00'!
+!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:05:30'!
 putOAt: aPosition
 
-	next = #o ifFalse: [ self error: self class notOTurnErrorMessage ].
-	(fichasO includes: aPosition) ifTrue: [self error: self class takenPositionErrorMessage].
-	(fichasX includes: aPosition) ifTrue: [self error: self class takenPositionErrorMessage].
-	self XHasWon ifTrue: [self error: self class gameFinishedErrorMessage].
-	fichasO size = 3 ifTrue: [self error: self class withoutPiecesErrorMessage].
-	(self inRange:aPosition) ifFalse:[self error:self class outOfRangeErrorMessage].
-	
-	
-	fichasO add:aPosition.
-	(self hasWin: fichasO) ifTrue: [winner _ #o].
-	next _ #x.
+		(self inRange:aPosition) ifFalse:[self error:self class outOfRangeErrorMessage].
+		gameState putOAt:aPosition.
 	! !
 
-!TerniLapilli methodsFor: 'game moves' stamp: 'nme 11/5/2018 20:37:15'!
+!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:05:34'!
 putXAt: aPosition
 	
-	next = #x ifFalse: [ self error: self class notXTurnErrorMessage ].
-	(fichasX includes: aPosition) ifTrue: [ self error: self class takenPositionErrorMessage ].
-	(fichasO includes:aPosition) ifTrue: [self error: self class takenPositionErrorMessage].
-	self OHasWon ifTrue: [self error: self class gameFinishedErrorMessage].
-	fichasX size = 3 ifTrue: [self error: self class withoutPiecesErrorMessage].
-	(self inRange:aPosition) ifFalse:[self error:self class outOfRangeErrorMessage].
 	
-	fichasX add: aPosition.	
-	(self hasWin: fichasX) ifTrue: [winner _ #x].
-	next _ #o.! !
+	(self inRange:aPosition) ifFalse:[self error:self class outOfRangeErrorMessage].
+	gameState putXAt:aPosition.
+! !
 
-!TerniLapilli methodsFor: 'game moves' stamp: 'nme 11/5/2018 21:31:52'!
+!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:05:20'!
 slideOFrom: anOldPosition to: aNewPosition 
 	
-	next = #o ifFalse: [self error: self class notXTurnErrorMessage].
-	fichasX size =3 ifFalse: [self error:self class piecesToPutErrorMessage ].
-	self XHasWon ifTrue: [self error: self class gameFinishedErrorMessage ].
-	(fichasX includes: aNewPosition ) ifTrue: [self error: self class takenPositionErrorMessage].
-	"(self isLegal: anOldPosition to:aNewPosition) ifFalse:[self error: self class illegalPositionErrorMessage]."
+	
+	
 	(self inRange:aNewPosition) ifFalse:[self error:self class outOfRangeErrorMessage].
-	
-	fichasO remove: anOldPosition.
-	fichasO add: aNewPosition.
-	
-	(self hasWin: fichasO) ifTrue: [winner _ #o].
-	next _ #x! !
+	"(self isLegal: anOldPosition to:aNewPosition) ifFalse:[self error: self class illegalPositionErrorMessage]."
+		gameState slideOFrom: anOldPosition to: aNewPosition. ! !
 
-!TerniLapilli methodsFor: 'game moves' stamp: 'nme 11/5/2018 21:31:44'!
+!TerniLapilli methodsFor: 'game moves' stamp: 'NME 11/8/2018 00:05:24'!
 slideXFrom: anOldPosition to: aNewPosition 
 	
 	
-	next = #x ifFalse: [self error: self class notXTurnErrorMessage].
-	fichasX size =3 ifFalse: [self error:self class piecesToPutErrorMessage ].
-	self OHasWon ifTrue: [self error: self class gameFinishedErrorMessage ].
-	(fichasO includes: aNewPosition) ifTrue: [self error: self class takenPositionErrorMessage].
-	"(self isLegal: anOldPosition to:aNewPosition) ifFalse:[self error: self class illegalPositionErrorMessage]."
 	(self inRange:aNewPosition) ifFalse:[self error:self class outOfRangeErrorMessage].
-	
-	fichasX remove: anOldPosition.
-	fichasX add:aNewPosition.
-	(self hasWin: fichasX) ifTrue: [winner _ #x].
-	next _ #o.! !
+	"(self isLegal: anOldPosition to:aNewPosition) ifFalse:[self error: self class illegalPositionErrorMessage]."
+	gameState slideXFrom: anOldPosition to: aNewPosition. 
+	! !
 
 
-!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/4/2018 23:57:33'!
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/7/2018 21:37:34'!
 OHasWon
 	
-	^winner = #o! !
+	^gameState OHasWon.! !
 
-!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/4/2018 23:57:12'!
+!TerniLapilli methodsFor: 'game states' stamp: 'NME 11/7/2018 23:33:35'!
 XHasWon
 	
-	^winner = #x! !
+	^gameState XHasWon.! !
 
 !TerniLapilli methodsFor: 'game states' stamp: 'NME 11/5/2018 00:12:01'!
 hasCompletedColumn: aSetOfPositions 
@@ -853,6 +1022,64 @@ inRange: aPosition
 isLegal: anOldPosition to: aNewPosition
 
 	^(aNewPosition x = (anOldPosition x +1) or: [aNewPosition x = (anOldPosition x -1)] ) and:[(aNewPosition y = (anOldPosition y+1) or: [aNewPosition x = (anOldPosition y -1)] )]! !
+
+
+!TerniLapilli methodsFor: 'position changes' stamp: 'NME 11/7/2018 23:28:34'!
+addAnOPosition:aPosition
+
+	fichasO add:aPosition .! !
+
+!TerniLapilli methodsFor: 'position changes' stamp: 'NME 11/7/2018 23:28:28'!
+addAnXPosition:aPosition
+
+	fichasX add:aPosition .! !
+
+!TerniLapilli methodsFor: 'position changes' stamp: 'NME 11/7/2018 23:18:35'!
+removeAnOPosition:aPosition
+
+fichasO remove:aPosition.! !
+
+!TerniLapilli methodsFor: 'position changes' stamp: 'NME 11/7/2018 23:18:42'!
+removeAnXPosition:aPosition
+
+fichasX remove:aPosition.! !
+
+
+!TerniLapilli methodsFor: 'change states' stamp: 'NME 11/8/2018 00:03:42'!
+changeStateFromPlacingO
+
+	(self hasWin: fichasO)
+	ifTrue: [gameState := WinnerO new initializeWith:self]
+	ifFalse: 
+	[fichasX size = 3 
+		ifTrue: [gameState:= SlidingX new initializeWith:self] 
+		ifFalse:[gameState := PlacingX new initializeWith:self]
+		].! !
+
+!TerniLapilli methodsFor: 'change states' stamp: 'NME 11/8/2018 00:03:48'!
+changeStateFromPlacingX
+
+	(self hasWin: fichasX)
+	ifTrue: [gameState := WinnerX new initializeWith:self]
+	ifFalse: 
+	[fichasO size = 3 
+		ifTrue: [gameState:= SlidingO new initializeWith:self] 
+		ifFalse:[gameState := PlacingO new initializeWith:self]
+		].! !
+
+!TerniLapilli methodsFor: 'change states' stamp: 'NME 11/8/2018 00:03:55'!
+changeStateFromSlidingO
+
+(self hasWin: fichasO)
+	ifTrue: [gameState := WinnerO new initializeWith:self]
+	ifFalse: [gameState:= SlidingX new initializeWith:self]! !
+
+!TerniLapilli methodsFor: 'change states' stamp: 'NME 11/8/2018 00:04:01'!
+changeStateFromSlidingX
+
+(self hasWin: fichasX)
+	ifTrue: [gameState := WinnerX new initializeWith:self]
+	ifFalse: [gameState:= SlidingO new initializeWith:self]! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
