@@ -1,3 +1,324 @@
+!classDefinition: #TerniLapilliConsoleTest category: #TerniLapilli!
+TestCase subclass: #TerniLapilliConsoleTest
+	instanceVariableNames: ''
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 00:06:08'!
+test01XMovesAndAppearsInConsoleLines
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliConsole on: game.
+	
+	game putXAt: 2@2.
+	
+	self assert: 'X marcó en 2@2' equals: (console lines at: 1).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 2).
+	self assert: console lines size equals: 2. 
+	
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 00:36:54'!
+test02OMovesAndAppearsInConsoleLines
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliConsole on: game.
+	
+	game putXAt: 2@2.
+	game putOAt:1@1.
+	
+	self assert: 'X marcó en 2@2' equals: (console lines at: 1).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 2).
+	self assert: 'O marcó en 1@1' equals: (console lines at:3).
+	self assert: 'Estado: Jugando X' equals: (console lines at:4).
+	self assert: console lines size equals: 4. 
+	
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 00:46:10'!
+test03XWinTheGameAppearsInConsoleLines
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliConsole on: game.
+	
+	game putXAt: 2@2.
+	game putOAt:1@1.
+	game putXAt: 1@3.
+	game putOAt:1@2.
+	game putXAt: 3@1.
+	
+	
+	self assert: 'X marcó en 2@2' equals: (console lines at: 1).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 2).
+	
+	self assert: 'O marcó en 1@1' equals: (console lines at:3).
+	self assert: 'Estado: Jugando X' equals: (console lines at:4).
+	
+	self assert: 'X marcó en 1@3' equals: (console lines at: 5).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 6).
+	
+	self assert: 'O marcó en 1@2' equals: (console lines at:7).
+	self assert: 'Estado: Jugando X' equals: (console lines at:8).
+	
+	self assert: 'X marcó en 3@1' equals: (console lines at: 9).
+	self assert: 'Estado: Juego terminado - ¡Ganó X!!' equals: (console lines at: 10).
+	
+	self assert: console lines size equals: 10. 
+	
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 00:57:21'!
+test04OWinTheGameAppearsInConsoleLines
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliConsole on: game.
+	
+	game putXAt: 2@2.
+	game putOAt:1@1.
+	game putXAt: 3@3.
+	game putOAt:2@1.
+	game putXAt: 1@3.
+	game putOAt:3@1.
+	
+	
+	self assert: 'X marcó en 2@2' equals: (console lines at: 1).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 2).
+	
+	self assert: 'O marcó en 1@1' equals: (console lines at:3).
+	self assert: 'Estado: Jugando X' equals: (console lines at:4).
+	
+	self assert: 'X marcó en 3@3' equals: (console lines at: 5).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 6).
+	
+	self assert: 'O marcó en 2@1' equals: (console lines at:7).
+	self assert: 'Estado: Jugando X' equals: (console lines at:8).
+	
+	self assert: 'X marcó en 1@3' equals: (console lines at: 9).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 10).
+	
+	self assert: 'O marcó en 3@1' equals: (console lines at:11).
+	self assert: 'Estado: Juego terminado - ¡Ganó O!!' equals: (console lines at:12).
+	
+	
+	self assert: console lines size equals: 12. 
+	
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 01:55:01'!
+test05UnfinishGameWithSlidingXinConsoleLines
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliConsole on: game.
+	
+	game putXAt: 2@2.
+	game putOAt:1@1.
+	game putXAt: 1@3.
+	game putOAt:3@1.
+	game putXAt: 2@1.
+	game putOAt:2@3.
+	game slideXFrom:  1@3  to: 1@2.
+
+	
+	
+	self assert: 'X marcó en 2@2' equals: (console lines at: 1).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 2).
+	
+	self assert: 'O marcó en 1@1' equals: (console lines at:3).
+	self assert: 'Estado: Jugando X' equals: (console lines at:4).
+	
+	self assert: 'X marcó en 1@3' equals: (console lines at: 5).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 6).
+	
+	self assert: 'O marcó en 3@1' equals: (console lines at:7).
+	self assert: 'Estado: Jugando X' equals: (console lines at:8).
+	
+	self assert: 'X marcó en 2@1' equals: (console lines at: 9).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 10).
+	
+	self assert: 'O marcó en 2@3' equals: (console lines at:11).
+	self assert: 'Estado: Jugando X' equals: (console lines at:12).
+	
+	self assert: 'X deslizó hasta 1@2 desde 1@3' equals: (console lines at:13).
+	self assert: 'Estado: Jugando O' equals: (console lines at:14).
+
+	
+	
+	self assert: console lines size equals: 14. 
+	
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 01:55:13'!
+test06UnfinishGameWithSlidingOinConsoleLines
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliConsole on: game.
+	
+	game putXAt: 2@2.
+	game putOAt:1@1.
+	game putXAt: 1@3.
+	game putOAt:3@1.
+	game putXAt: 2@1.
+	game putOAt:2@3.
+	game slideXFrom:  1@3  to: 1@2.
+	game slideOFrom: 3@1  to: 3@2.
+	game slideXFrom: 2@2  to: 3@3.
+
+	
+	
+	self assert: 'X marcó en 2@2' equals: (console lines at: 1).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 2).
+	
+	self assert: 'O marcó en 1@1' equals: (console lines at:3).
+	self assert: 'Estado: Jugando X' equals: (console lines at:4).
+	
+	self assert: 'X marcó en 1@3' equals: (console lines at: 5).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 6).
+	
+	self assert: 'O marcó en 3@1' equals: (console lines at:7).
+	self assert: 'Estado: Jugando X' equals: (console lines at:8).
+	
+	self assert: 'X marcó en 2@1' equals: (console lines at: 9).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 10).
+	
+	self assert: 'O marcó en 2@3' equals: (console lines at:11).
+	self assert: 'Estado: Jugando X' equals: (console lines at:12).
+	
+	self assert: 'X deslizó hasta 1@2 desde 1@3' equals: (console lines at:13).
+	self assert: 'Estado: Jugando O' equals: (console lines at:14).
+	
+	self assert: 'O deslizó hasta 3@2 desde 3@1' equals: (console lines at:15).
+	self assert: 'Estado: Jugando X' equals: (console lines at:16).
+	
+	self assert: 'X deslizó hasta 3@3 desde 2@2' equals: (console lines at:17).
+	self assert: 'Estado: Jugando O' equals: (console lines at:18).
+	
+	
+	self assert: console lines size equals: 18. 
+	
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 01:55:27'!
+test07FinishedGameBySlidingWinningXinConsoleLines
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliConsole on: game.
+	
+	game putXAt: 2@2.
+	game putOAt:1@1.
+	game putXAt: 3@3.
+	game putOAt:1@2.
+	game putXAt: 1@3.
+	game putOAt:3@1.
+	game slideXFrom:  2@2  to: 2@3.
+	
+	
+	self assert: 'X marcó en 2@2' equals: (console lines at: 1).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 2).
+	
+	self assert: 'O marcó en 1@1' equals: (console lines at:3).
+	self assert: 'Estado: Jugando X' equals: (console lines at:4).
+	
+	self assert: 'X marcó en 3@3' equals: (console lines at: 5).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 6).
+	
+	self assert: 'O marcó en 1@2' equals: (console lines at:7).
+	self assert: 'Estado: Jugando X' equals: (console lines at:8).
+	
+	self assert: 'X marcó en 1@3' equals: (console lines at: 9).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 10).
+	
+	self assert: 'O marcó en 3@1' equals: (console lines at:11).
+	self assert: 'Estado: Jugando X' equals: (console lines at:12).
+	
+	self assert: 'X deslizó hasta 2@3 desde 2@2' equals: (console lines at:13).
+	self assert: 'Estado: Juego terminado - ¡Ganó X!!' equals: (console lines at:14).
+	
+	
+	self assert: console lines size equals: 14. 
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 01:55:37'!
+test08FinishedGameBySlidingWinningOinConsoleLines
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliConsole on: game.
+	
+	game putXAt: 3@2.
+	game putOAt:1@1.
+	game putXAt: 3@3.
+	game putOAt:2@2.
+	game putXAt: 1@3.
+	game putOAt:3@1.
+	game slideXFrom:  1@3  to: 2@3.
+	game slideOFrom:  2@2  to: 2@1.
+	
+	
+	self assert: 'X marcó en 3@2' equals: (console lines at: 1).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 2).
+	
+	self assert: 'O marcó en 1@1' equals: (console lines at:3).
+	self assert: 'Estado: Jugando X' equals: (console lines at:4).
+	
+	self assert: 'X marcó en 3@3' equals: (console lines at: 5).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 6).
+	
+	self assert: 'O marcó en 2@2' equals: (console lines at:7).
+	self assert: 'Estado: Jugando X' equals: (console lines at:8).
+	
+	self assert: 'X marcó en 1@3' equals: (console lines at: 9).
+	self assert: 'Estado: Jugando O' equals: (console lines at: 10).
+	
+	self assert: 'O marcó en 3@1' equals: (console lines at:11).
+	self assert: 'Estado: Jugando X' equals: (console lines at:12).
+	
+	self assert: 'X deslizó hasta 2@3 desde 1@3' equals: (console lines at:13).
+	self assert: 'Estado: Jugando O' equals: (console lines at:14).
+	
+	self assert: 'O deslizó hasta 2@1 desde 2@2' equals: (console lines at:15).
+	self assert: 'Estado: Juego terminado - ¡Ganó O!!' equals: (console lines at:16).
+	
+	
+	self assert: console lines size equals: 16.
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 01:57:11'!
+test09XMovesAndAppearsInView
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliView on: game.
+	
+	game putXAt: 2@2.
+	
+	self assert: ' | | ' equals: (console lines at: 1).
+	self assert: '-----' equals: (console lines at: 2).
+	self assert: ' |X| ' equals: (console lines at: 3).
+	self assert: '-----' equals: (console lines at: 4).
+	self assert: ' | | ' equals: (console lines at: 5).
+	self assert: '-----' equals: (console lines at: 6).
+	self assert: console lines size equals: 6. 
+	
+	! !
+
+
 !classDefinition: #TerniLapilliTest category: #TerniLapilli!
 TestCase subclass: #TerniLapilliTest
 	instanceVariableNames: 'game'
@@ -872,7 +1193,7 @@ test40CanNotSlideOWhenPlayingX
 
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'state playerOPositions playerXPositions'
+	instanceVariableNames: 'state playerOPositions playerXPositions console'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -952,12 +1273,13 @@ hasWin: positions
 		or: [ self hasDownDiagonal: positions ]]].! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'HAW 11/8/2018 11:27:32'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'NME 11/11/2018 01:43:58'!
 initialize
 
 	playerXPositions := OrderedCollection new.
 	playerOPositions := OrderedCollection new.
-	state := PlacingX new initializeFor: self.! !
+	state := PlacingX new initializeFor: self.
+	console := TerniLapilliConsole new.! !
 
 
 !TerniLapilli methodsFor: 'marking board' stamp: 'JG 11/6/2018 20:34:26'!
@@ -980,13 +1302,18 @@ changeStateAfterAdding: aPosition to: positions
 	state := TerniLapilliState for: self
 	! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'NME 11/11/2018 00:59:06'!
 putOWhenPlacingOAt: aPosition
 
 	self playerOHasPiecesToPlace.
 	self assertIsFree: aPosition.
 
-	self changeStateAfterAdding: aPosition to: playerOPositions
+	self changeStateAfterAdding: aPosition to: playerOPositions.
+	
+	console addLine: 'O marcó en ', aPosition asString.
+	self hasPlayerOWon 
+	ifTrue: [console addLine: 'Estado: Juego terminado - ¡Ganó O!!'] 
+	ifFalse: [console addLine: 'Estado: Jugando X'].
 		! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:39:41'!
@@ -1009,14 +1336,20 @@ putXWhenPlacingOAt: aPoint
 	
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'NME 11/11/2018 00:53:00'!
 putXWhenPlacingXAt: aPosition
 
 	self playerXHasPiecesToPlace.
 	self assertIsFree: aPosition.
+
+	self changeStateAfterAdding: aPosition to: playerXPositions.
 	
-	self changeStateAfterAdding: aPosition to: playerXPositions
-	! !
+	
+	console addLine: 'X marcó en ', aPosition asString.
+	
+	self hasPlayerXWon 
+	ifTrue: [console addLine: 'Estado: Juego terminado - ¡Ganó X!!'] 
+	ifFalse: [console addLine: 'Estado: Jugando O'].! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:38:49'!
 putXWhenSlidingOAt: aPoint 
@@ -1079,14 +1412,19 @@ slideOWhenPlayingXFrom: aPosition to: anotherPosition
 
 	self error: self class notOTurnErrorMessage ! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'NME 11/11/2018 01:34:10'!
 slideOWhenSlidingOFrom: aPosition to: anotherPosition
 	
 	self assertIsFree: anotherPosition .
 	self assertIsLegalMovementFrom: aPosition to: anotherPosition.
 	
 	playerOPositions remove: aPosition.
-	self changeStateAfterAdding: anotherPosition to: playerOPositions
+	self changeStateAfterAdding: anotherPosition to: playerOPositions.
+	
+	console addLine: 'O deslizó hasta ', anotherPosition asString, ' desde ', aPosition asString .
+	self hasPlayerOWon 
+	ifTrue: [console addLine: 'Estado: Juego terminado - ¡Ganó O!!'] 
+	ifFalse: [console addLine: 'Estado: Jugando X'].
 	 ! !
 
 !TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:16:01'!
@@ -1099,14 +1437,19 @@ slideXWhenPlayingOFrom: aPosition to: anotherPosition
 
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'sliding - private' stamp: 'HAW 11/8/2018 11:53:04'!
+!TerniLapilli methodsFor: 'sliding - private' stamp: 'NME 11/11/2018 01:26:03'!
 slideXWhenSlidingXFrom: aPosition to: anotherPosition
 	
 	self assertIsFree: anotherPosition .
 	self assertIsLegalMovementFrom: aPosition to: anotherPosition.
 	
 	playerXPositions remove: aPosition.
-	self changeStateAfterAdding: anotherPosition to: playerXPositions! !
+	self changeStateAfterAdding: anotherPosition to: playerXPositions.
+	
+	console addLine: 'X deslizó hasta ', anotherPosition asString, ' desde ', aPosition asString .
+	self hasPlayerXWon 
+	ifTrue: [console addLine: 'Estado: Juego terminado - ¡Ganó X!!'] 
+	ifFalse: [console addLine: 'Estado: Jugando O'].! !
 
 
 !TerniLapilli methodsFor: 'testing board positions' stamp: 'HAW 11/8/2018 12:19:28'!
@@ -1172,6 +1515,12 @@ isSlidingX
 	
 	^state isSlidingX! !
 
+
+!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 00:20:24'!
+console: aConsole
+
+	console _ aConsole.! !
+
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'TerniLapilli class' category: #TerniLapilli!
@@ -1236,6 +1585,36 @@ positionOutsideBoardErrorMessage
 positionTakenErrorMessage
 	
 	^'Position taken'! !
+
+
+!classDefinition: #TerniLapilliConsole category: #TerniLapilli!
+Object subclass: #TerniLapilliConsole
+	instanceVariableNames: 'game lines'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!TerniLapilliConsole methodsFor: 'initialization' stamp: 'NME 11/11/2018 00:32:54'!
+addLine: aLine
+
+	lines addLast: aLine.! !
+
+!TerniLapilliConsole methodsFor: 'initialization' stamp: 'NME 11/11/2018 01:48:19'!
+initialize 
+
+lines _ OrderedCollection new.! !
+
+!TerniLapilliConsole methodsFor: 'initialization' stamp: 'NME 11/11/2018 00:19:58'!
+initializeOn: aTerniLapilliGame
+	
+	game _ aTerniLapilliGame.
+	lines _ OrderedCollection new.
+	game console:self.! !
+
+!TerniLapilliConsole methodsFor: 'initialization' stamp: 'NME 11/11/2018 00:12:22'!
+lines 
+
+	^lines! !
 
 
 !classDefinition: #TerniLapilliState category: #TerniLapilli!
@@ -1593,3 +1972,21 @@ SlidingX class
 isFor: aTerniLapilli 
 
 	^aTerniLapilli isPlayingO and: [ aTerniLapilli hasXMorePiecesToPlace not and: [ aTerniLapilli hasPlayerOWon not ]]! !
+
+
+!classDefinition: #TerniLapilliView category: #TerniLapilli!
+Object subclass: #TerniLapilliView
+	instanceVariableNames: 'game view'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TerniLapilli'!
+
+!TerniLapilliView methodsFor: 'initialization' stamp: 'NME 11/11/2018 02:05:17'!
+initializeOn: aTerniLapilliGame
+	game _ aTerniLapilliGame .
+	view _ OrderedCollection new.
+	"view addLast:' | | '.
+	view addLast:'-----'.
+	view addLast:' | | '.
+	view addLast: '-----'.
+	view addLast:' | | '."! !
