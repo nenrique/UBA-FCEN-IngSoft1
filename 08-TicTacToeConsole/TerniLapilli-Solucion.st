@@ -298,8 +298,26 @@ test08FinishedGameBySlidingWinningOinConsoleLines
 	self assert: console lines size equals: 16.
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 01:57:11'!
-test09XMovesAndAppearsInView
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 18:54:40'!
+test09NoMovesAndAppearsInView
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliView on: game.
+	
+	self assert: ' | | ' equals: (console lines at: 1).
+	self assert: '-----' equals: (console lines at: 2).
+	self assert: ' | | ' equals: (console lines at: 3).
+	self assert: '-----' equals: (console lines at: 4).
+	self assert: ' | | ' equals: (console lines at: 5).
+	self assert: 'Playing O' equals: (console lines at:6).
+	self assert: console lines size equals: 6. 
+	
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 19:38:14'!
+test10XMovesAndAppearsInView
 
 	|game console |
 	
@@ -313,7 +331,7 @@ test09XMovesAndAppearsInView
 	self assert: ' |X| ' equals: (console lines at: 3).
 	self assert: '-----' equals: (console lines at: 4).
 	self assert: ' | | ' equals: (console lines at: 5).
-	self assert: '-----' equals: (console lines at: 6).
+	self assert: 'Playing O' equals: (console lines at:6).
 	self assert: console lines size equals: 6. 
 	
 	! !
@@ -1193,7 +1211,7 @@ test40CanNotSlideOWhenPlayingX
 
 !classDefinition: #TerniLapilli category: #TerniLapilli!
 Object subclass: #TerniLapilli
-	instanceVariableNames: 'state playerOPositions playerXPositions console'
+	instanceVariableNames: 'state playerOPositions playerXPositions console view'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
@@ -1336,9 +1354,10 @@ putXWhenPlacingOAt: aPoint
 	
 	self error: self class notXTurnErrorMessage! !
 
-!TerniLapilli methodsFor: 'marking board - private' stamp: 'NME 11/11/2018 00:53:00'!
+!TerniLapilli methodsFor: 'marking board - private' stamp: 'NME 11/11/2018 19:37:02'!
 putXWhenPlacingXAt: aPosition
 
+	|view2|
 	self playerXHasPiecesToPlace.
 	self assertIsFree: aPosition.
 
@@ -1349,7 +1368,19 @@ putXWhenPlacingXAt: aPosition
 	
 	self hasPlayerXWon 
 	ifTrue: [console addLine: 'Estado: Juego terminado - ¡Ganó X!!'] 
-	ifFalse: [console addLine: 'Estado: Jugando O'].! !
+	ifFalse: [console addLine: 'Estado: Jugando O'].
+	
+	view2 _  OrderedCollection new.
+	view2 addLast:' | | '.
+	view2 addLast:'-----'.
+	view2 addLast:' |X| '.
+	view2 addLast: '-----'.
+	view2 addLast:' | | '.
+	view2 addLast: 'Playing O'.
+	
+	view addLines: view2.
+	
+! !
 
 !TerniLapilli methodsFor: 'marking board - private' stamp: 'JG 10/28/2018 12:38:49'!
 putXWhenSlidingOAt: aPoint 
@@ -1520,6 +1551,10 @@ isSlidingX
 console: aConsole
 
 	console _ aConsole.! !
+
+!TerniLapilli methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 18:56:30'!
+view:aView
+	view := aView ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -1976,17 +2011,28 @@ isFor: aTerniLapilli
 
 !classDefinition: #TerniLapilliView category: #TerniLapilli!
 Object subclass: #TerniLapilliView
-	instanceVariableNames: 'game view'
+	instanceVariableNames: 'game lines'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TerniLapilli'!
 
-!TerniLapilliView methodsFor: 'initialization' stamp: 'NME 11/11/2018 02:05:17'!
+!TerniLapilliView methodsFor: 'initialization' stamp: 'NME 11/11/2018 19:37:48'!
+addLines: newLines
+
+	lines _ newLines ! !
+
+!TerniLapilliView methodsFor: 'initialization' stamp: 'NME 11/11/2018 18:55:42'!
 initializeOn: aTerniLapilliGame
 	game _ aTerniLapilliGame .
-	view _ OrderedCollection new.
-	"view addLast:' | | '.
-	view addLast:'-----'.
-	view addLast:' | | '.
-	view addLast: '-----'.
-	view addLast:' | | '."! !
+	lines _ OrderedCollection new.
+	lines addLast:' | | '.
+	lines addLast:'-----'.
+	lines addLast:' | | '.
+	lines addLast: '-----'.
+	lines addLast:' | | '.
+	lines addLast: 'Playing O'.
+	game view: self.! !
+
+!TerniLapilliView methodsFor: 'initialization' stamp: 'NME 11/11/2018 18:53:46'!
+lines 
+	^lines! !
