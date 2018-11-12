@@ -316,7 +316,7 @@ test09NoMovesAndAppearsInView
 	
 	! !
 
-!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 19:38:14'!
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/11/2018 23:51:10'!
 test10XMovesAndAppearsInView
 
 	|game console |
@@ -332,6 +332,28 @@ test10XMovesAndAppearsInView
 	self assert: '-----' equals: (console lines at: 4).
 	self assert: ' | | ' equals: (console lines at: 5).
 	self assert: 'Playing O' equals: (console lines at:6).
+	self assert: console lines size equals: 6. 
+	
+	! !
+
+!TerniLapilliConsoleTest methodsFor: 'as yet unclassified' stamp: 'NME 11/12/2018 00:11:52'!
+test11OMovesAndAppearsInView
+
+	|game console |
+	
+	game _ TerniLapilli new.
+	console _ TerniLapilliView on: game.
+	
+	game putXAt: 2@2.
+	game putOAt: 3@1.
+	
+	
+	self assert: ' | | ' equals: (console lines at: 1).
+	self assert: '-----' equals: (console lines at: 2).
+	self assert: ' |X| ' equals: (console lines at: 3).
+	self assert: '-----' equals: (console lines at: 4).
+	self assert: 'O| | ' equals: (console lines at: 5).
+	self assert: 'Playing X' equals: (console lines at:6).
 	self assert: console lines size equals: 6. 
 	
 	! !
@@ -1291,13 +1313,14 @@ hasWin: positions
 		or: [ self hasDownDiagonal: positions ]]].! !
 
 
-!TerniLapilli methodsFor: 'initialization' stamp: 'NME 11/11/2018 01:43:58'!
+!TerniLapilli methodsFor: 'initialization' stamp: 'NME 11/12/2018 00:20:56'!
 initialize
 
 	playerXPositions := OrderedCollection new.
 	playerOPositions := OrderedCollection new.
 	state := PlacingX new initializeFor: self.
-	console := TerniLapilliConsole new.! !
+	console := TerniLapilliConsole new.
+	view := TerniLapilliView new.! !
 
 
 !TerniLapilli methodsFor: 'marking board' stamp: 'JG 11/6/2018 20:34:26'!
