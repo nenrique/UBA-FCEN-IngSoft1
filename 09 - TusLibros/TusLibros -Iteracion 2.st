@@ -200,6 +200,33 @@ test04CanNotCheckOutAnItemThatIsNotInThePriceList
 	! !
 
 
+!classDefinition: #CreditCardTest category: #TusLibros!
+TestCase subclass: #CreditCardTest
+	instanceVariableNames: 'cashier'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!CreditCardTest methodsFor: 'as yet unclassified' stamp: 'LR 11/20/2018 06:06:25'!
+test01CreditCardIsValid
+	| card |
+	card _ CreditCard name: 'Ricky' with: 5423240012345555 expiresOn: (GregorianMonthOfYear januaryOf: (GregorianYear number: 2020)). 
+	
+	self assert: card isValid.
+	
+	card _ CreditCard name: 'Jim Lahey' with: 5423240012345555 expiresOn: (GregorianMonthOfYear januaryOf: (GregorianYear number: 1984)).
+	
+	self assert: (card isValid) not.
+	
+	card _ CreditCard name: 'Way of the road Bubs, way of the road.' with: 10000 expiresOn: (GregorianMonthOfYear januaryOf: (GregorianYear number: 1984)).
+	
+	self assert: (card isValid) not.
+	
+	card _ CreditCard name: 'Jim Lahey' with: 542324001234 expiresOn: (GregorianMonthOfYear januaryOf: (GregorianYear number: 1984)).
+	
+	self assert: (card isValid) not.! !
+
+
 !classDefinition: #Cart category: #TusLibros!
 Object subclass: #Cart
 	instanceVariableNames: 'catalog items'
@@ -332,3 +359,35 @@ doCheckoutOf: aCart with: aListOfPrices
 !Cashier class methodsFor: 'error messages' stamp: 'nme 11/15/2018 18:40:43'!
 emptyCartErrorMessage
 	^'The cart is Empty'! !
+
+
+!classDefinition: #CreditCard category: #TusLibros!
+Object subclass: #CreditCard
+	instanceVariableNames: 'name creditCardNumber expirationDate'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!CreditCard methodsFor: 'initialization' stamp: 'LR 11/20/2018 06:03:47'!
+credit
+	^ credit.! !
+
+!CreditCard methodsFor: 'initialization' stamp: 'LR 11/20/2018 06:05:08'!
+initializeWithName: aName with: aCreditCardNumber expiresOn: aGregorianMonthOfYear.
+	name _ aName.
+	creditCardNumber  _ aCreditCardNumber.
+	expirationDate _ aGregorianMonthOfYear.! !
+
+!CreditCard methodsFor: 'initialization' stamp: 'LR 11/20/2018 06:06:41'!
+isValid
+	^ (name size < 30) and: (creditCardNumber asString size = 16) and: (expirationDate > GregorianMonthOfYear current).! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'CreditCard class' category: #TusLibros!
+CreditCard class
+	instanceVariableNames: ''!
+
+!CreditCard class methodsFor: 'initialization' stamp: 'LR 11/20/2018 06:00:47'!
+name: aName with: credit expiresOn: aGregorianMonthOfYear 
+	^ CreditCard new initializeWithName: aName with: credit expiresOn: aGregorianMonthOfYear.! !
