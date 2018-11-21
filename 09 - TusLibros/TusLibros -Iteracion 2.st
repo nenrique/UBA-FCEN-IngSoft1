@@ -97,10 +97,11 @@ createCart
 	
 	^Cart acceptingItemsOf: self defaultCatalog! !
 
-!CartTest methodsFor: 'support' stamp: 'HernanWilkinson 6/17/2013 17:43'!
+!CartTest methodsFor: 'support' stamp: 'nme 11/21/2018 17:38:13'!
 defaultCatalog
+
 	
-	^ Array with: self itemSellByTheStore! !
+	^ Dictionary newFromPairs:( Array with: self itemSellByTheStore with:5).! !
 
 !CartTest methodsFor: 'support' stamp: 'HernanWilkinson 6/17/2013 17:44'!
 itemNotSellByTheStore
@@ -120,60 +121,77 @@ TestCase subclass: #CashierTest
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'nme 11/15/2018 18:51:33'!
+!CashierTest methodsFor: 'support' stamp: 'nme 11/21/2018 19:35:24'!
 anItem
 
 	^'anItemInTheCart'! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'nme 11/15/2018 18:54:31'!
+!CashierTest methodsFor: 'support' stamp: 'nme 11/21/2018 19:35:33'!
 anotherItem
 
 	^'anotherItemInTheCart'! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'nme 11/15/2018 19:18:01'!
+!CashierTest methodsFor: 'support' stamp: 'nme 11/21/2018 19:35:44'!
 defaultCatalog
 	
-	^ Array with: self anItem with:self anotherItem.! !
+	^ Dictionary newFromPairs: (Array with: self anItem with:5 with: self anotherItem with: 8).! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'nme 11/15/2018 19:03:48'!
-listPrices
+!CashierTest methodsFor: 'support' stamp: 'nme 11/21/2018 19:36:15'!
+invalidCreditCardByDate
 
-	|list|
-	
-	list _ Dictionary new.
-	
-	list at: self anItem  put: 5.
-	list at:  self anotherItem put: 10.
-	
-	^list ! !
+^CreditCard name: 'Juan' withNumber: 2222222222222222 expiresOn:(GregorianMonthOfYear yearNumber: 2017 monthNumber:1) . 
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'nme 11/15/2018 18:44:42'!
+	! !
+
+!CashierTest methodsFor: 'support' stamp: 'nme 11/21/2018 19:36:07'!
+invalidCreditCardByName
+
+^CreditCard name: 'sssssssssssssssssssssssssssssss' withNumber: 2222222222222222 expiresOn:(GregorianMonthOfYear yearNumber: 2019 monthNumber:1) . 
+
+	! !
+
+!CashierTest methodsFor: 'support' stamp: 'nme 11/21/2018 19:35:59'!
+invalidCreditCardByNumber
+
+^CreditCard name: 'Juan' withNumber: 22222222222222 expiresOn:(GregorianMonthOfYear yearNumber: 2019 monthNumber:1) . 
+
+	! !
+
+!CashierTest methodsFor: 'support' stamp: 'nme 11/21/2018 19:40:15'!
+validCreditCard
+
+^CreditCard name: 'Juan' withNumber: 2222222222222222 expiresOn:(GregorianMonthOfYear yearNumber: 2019 monthNumber:1) . 
+
+	! !
+
+
+!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:38:28'!
 test01SholdNotAcceptAnEmptyCart
 
-	|aCart aCashier|
-	aCart _ Cart new.
-	aCashier _ Cashier doCheckoutOf: aCart.
+	|aCart aDate |
+	aCart _ Cart acceptingItemsOf: self defaultCatalog.
+	aDate _(GregorianMonthOfYear yearNumber: 2017 monthNumber:1) .
+	
 	
 	self 
-		should: [ aCashier doCheckOut ]
+		should: [ Cashier doCheckoutOf: aCart with:self validCreditCard OnDate: aDate.]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals:  Cashier emptyCartErrorMessage].
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'nme 11/15/2018 19:02:43'!
+!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:38:38'!
 test02TotalFromAnElementCheckedOutIsThePriceInTheListsPrices
 
-	|aCart aCashier|
+	|aCart aCashier |
 	aCart _ Cart acceptingItemsOf: self defaultCatalog.
 	aCart add: 1 of: self anItem.
+	aCashier _ Cashier doCheckoutOf: aCart with:self validCreditCard OnDate: (GregorianMonthOfYear yearNumber: 2017 monthNumber:1) .
 	
-	aCashier _ Cashier doCheckoutOf: aCart with: self listPrices.
-	
-	self assert: aCashier totalCheckOut equals: (aCashier priceOfItem: self anItem).
+	self assert: aCashier totalCheckOut equals: (aCart price: self anItem).
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'nme 11/15/2018 19:45:57'!
+!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:38:47'!
 test03TotalFromMoreThanAnElementCheckedOutIsTheSumOfThePrices
 
 	|aCart aCashier|
@@ -181,23 +199,49 @@ test03TotalFromMoreThanAnElementCheckedOutIsTheSumOfThePrices
 	aCart add: 1 of: self anItem.
 	aCart  add: 1 of: self anotherItem.
 	
-	aCashier _ Cashier doCheckoutOf: aCart with: self listPrices.
+	aCashier _ Cashier doCheckoutOf: aCart with: self validCreditCard OnDate: (GregorianMonthOfYear yearNumber: 2017 monthNumber:1) . 
 	
-	self assert: aCashier totalCheckOut equals: ((self listPrices at: self anItem) +( self listPrices at: self anotherItem)).
+	self assert: aCashier totalCheckOut equals: (aCart price: self anItem) + (aCart price:self anotherItem ).
 	! !
 
-!CashierTest methodsFor: 'as yet unclassified' stamp: 'nme 11/15/2018 19:59:34'!
-test04CanNotCheckOutAnItemThatIsNotInThePriceList
+!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:19:27'!
+test04CheckOutWithAnExpiredCardRaiseAnException
 
-	|aCart aCashier|
+	|aCart |
 	aCart _ Cart acceptingItemsOf: self defaultCatalog.
 	aCart add: 1 of: self anItem.
-	aCart  add: 1 of: self anItemWithoutPrice.
 	
-	aCashier _ Cashier doCheckoutOf: aCart with: self listPrices.
+	self 
+		should: [ Cashier doCheckoutOf: aCart with:self invalidCreditCardByDate OnDate: (GregorianMonthOfYear yearNumber: 2018 monthNumber:8)]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText equals:  Cashier expiredCardErrorMessage].! !
+
+!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:34:00'!
+test05CheckOutWithAnInvalidNameCardRaiseAnException
+
+	|aCart |
+	aCart _ Cart acceptingItemsOf: self defaultCatalog.
+	aCart add: 1 of: self anItem.
 	
-	self assert: aCashier totalCheckOut equals: ((self listPrices at: self anItem) +( self listPrices at: self anotherItem)).
-	! !
+	self 
+		should: [ Cashier doCheckoutOf: aCart with:self invalidCreditCardByName OnDate: (GregorianMonthOfYear yearNumber: 2018 monthNumber:8)]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText equals:  Cashier invalidNameCardErrorMessage].! !
+
+!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:34:33'!
+test05CheckOutWithAnInvalidNumberCardRaiseAnException
+
+	|aCart |
+	aCart _ Cart acceptingItemsOf: self defaultCatalog.
+	aCart add: 1 of: self anItem.
+	
+	self 
+		should: [ Cashier doCheckoutOf: aCart with:self invalidCreditCardByNumber OnDate: (GregorianMonthOfYear yearNumber: 2018 monthNumber:8)]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText equals:  Cashier invalidNumberCardErrorMessage].! !
 
 
 !classDefinition: #CreditCardTest category: #TusLibros!
@@ -207,24 +251,14 @@ TestCase subclass: #CreditCardTest
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!CreditCardTest methodsFor: 'as yet unclassified' stamp: 'LR 11/20/2018 06:06:25'!
+!CreditCardTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:42:05'!
 test01CreditCardIsValid
 	| card |
-	card _ CreditCard name: 'Ricky' with: 5423240012345555 expiresOn: (GregorianMonthOfYear januaryOf: (GregorianYear number: 2020)). 
+	card _ CreditCard name: 'Ricky' withNumber: 5423240012345555 expiresOn: (GregorianMonthOfYear januaryOf: (GregorianYear number: 2020)). 
 	
-	self assert: card isValid.
-	
-	card _ CreditCard name: 'Jim Lahey' with: 5423240012345555 expiresOn: (GregorianMonthOfYear januaryOf: (GregorianYear number: 1984)).
-	
-	self assert: (card isValid) not.
-	
-	card _ CreditCard name: 'Way of the road Bubs, way of the road.' with: 10000 expiresOn: (GregorianMonthOfYear januaryOf: (GregorianYear number: 1984)).
-	
-	self assert: (card isValid) not.
-	
-	card _ CreditCard name: 'Jim Lahey' with: 542324001234 expiresOn: (GregorianMonthOfYear januaryOf: (GregorianYear number: 1984)).
-	
-	self assert: (card isValid) not.! !
+	self assert: card name equals: 'Ricky'.
+	self assert: card number equals: 5423240012345555.
+	self assert: card expirationDate equals: (GregorianMonthOfYear januaryOf: (GregorianYear number: 2020)).! !
 
 
 !classDefinition: #Cart category: #TusLibros!
@@ -245,10 +279,11 @@ invalidQuantityErrorMessage
 	^'Invalid number of items'! !
 
 
-!Cart methodsFor: 'assertions' stamp: 'HernanWilkinson 6/17/2013 17:51'!
+!Cart methodsFor: 'assertions' stamp: 'nme 11/21/2018 17:32:29'!
 assertIsValidItem: anItem
 
-	(catalog includes: anItem) ifFalse: [ self error: self invalidItemErrorMessage ]! !
+	(catalog includesKey: anItem) ifFalse: [ self error: self invalidItemErrorMessage ].
+	! !
 
 !Cart methodsFor: 'assertions' stamp: 'HernanWilkinson 6/17/2013 17:51'!
 assertIsValidQuantity: aQuantity
@@ -263,6 +298,11 @@ initializeAcceptingItemsOf: aCatalog
 	items := OrderedCollection new.! !
 
 
+!Cart methodsFor: 'queries' stamp: 'nme 11/21/2018 17:40:03'!
+catalog
+
+	^catalog! !
+
 !Cart methodsFor: 'queries' stamp: 'nme 11/15/2018 19:24:25'!
 items
 
@@ -272,6 +312,11 @@ items
 occurrencesOf: anItem
 
 	^items occurrencesOf: anItem  ! !
+
+!Cart methodsFor: 'queries' stamp: 'nme 11/21/2018 18:21:19'!
+price: anItem
+
+	^catalog at:anItem .! !
 
 
 !Cart methodsFor: 'testing' stamp: 'HernanWilkinson 6/17/2013 17:44'!
@@ -312,34 +357,23 @@ acceptingItemsOf: aCatalog
 
 !classDefinition: #Cashier category: #TusLibros!
 Object subclass: #Cashier
-	instanceVariableNames: 'cart prices total'
+	instanceVariableNames: 'cart total creditCard date'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!Cashier methodsFor: 'initialization' stamp: 'nme 11/15/2018 18:37:42'!
-initializeWith: aCart 
-	
-	cart _ aCart .! !
-
-!Cashier methodsFor: 'initialization' stamp: 'nme 11/15/2018 19:06:13'!
-initializeWith: aCart and: aListOfPrices
-	cart _ aCart .
-	prices _ aListOfPrices! !
+!Cashier methodsFor: 'initialization' stamp: 'nme 11/21/2018 17:54:45'!
+initializeCheckOutOf: aCart with: aCreditCard onDate: aDate.
+ 
+	cart _ aCart.
+	creditCard _ aCreditCard .
+	date _ aDate.	! !
 
 
-!Cashier methodsFor: 'checkingOut' stamp: 'nme 11/15/2018 18:39:55'!
-doCheckOut
-	^self error:self class emptyCartErrorMessage ! !
-
-!Cashier methodsFor: 'checkingOut' stamp: 'nme 11/15/2018 19:46:30'!
-priceOfItem: anItem
-	^prices at: anItem! !
-
-!Cashier methodsFor: 'checkingOut' stamp: 'nme 11/15/2018 19:24:35'!
+!Cashier methodsFor: 'checkingOut' stamp: 'nme 11/21/2018 18:23:52'!
 totalCheckOut
 	
-	^ cart items inject: 0 into:[:total :item| total+ (prices at:item)]. ! !
+	^ cart items inject: 0 into:[:total :item| total+ (cart price: item)]. ! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -347,18 +381,32 @@ totalCheckOut
 Cashier class
 	instanceVariableNames: ''!
 
-!Cashier class methodsFor: 'initialization' stamp: 'nme 11/15/2018 18:37:15'!
-doCheckoutOf: aCart 
-	^self new initializeWith: aCart .! !
-
-!Cashier class methodsFor: 'initialization' stamp: 'nme 11/15/2018 19:05:29'!
-doCheckoutOf: aCart with: aListOfPrices
-	^self new initializeWith:aCart and: aListOfPrices.! !
+!Cashier class methodsFor: 'initialization' stamp: 'nme 11/21/2018 19:41:08'!
+doCheckoutOf: aCart with: aCreditCard OnDate: aDate 
+	
+	(aCreditCard expirationDate< aDate ) ifTrue: [self error: self expiredCardErrorMessage].
+	(aCreditCard name size >30) ifTrue: [self error: self invalidNameCardErrorMessage].
+	(aCreditCard number asString size= 16) ifFalse: [self error: self invalidNumberCardErrorMessage].
+	aCart isEmpty ifTrue: [self error: self emptyCartErrorMessage].
+	
+	^self new initializeCheckOutOf:aCart with:aCreditCard onDate:aDate .! !
 
 
 !Cashier class methodsFor: 'error messages' stamp: 'nme 11/15/2018 18:40:43'!
 emptyCartErrorMessage
 	^'The cart is Empty'! !
+
+!Cashier class methodsFor: 'error messages' stamp: 'nme 11/21/2018 18:41:13'!
+expiredCardErrorMessage
+	^'Expired card'! !
+
+!Cashier class methodsFor: 'error messages' stamp: 'nme 11/21/2018 19:31:50'!
+invalidNameCardErrorMessage
+	^'Invalid Name'! !
+
+!Cashier class methodsFor: 'error messages' stamp: 'nme 11/21/2018 19:31:59'!
+invalidNumberCardErrorMessage
+	^'Invalid Number'! !
 
 
 !classDefinition: #CreditCard category: #TusLibros!
@@ -368,9 +416,19 @@ Object subclass: #CreditCard
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!CreditCard methodsFor: 'initialization' stamp: 'LR 11/20/2018 06:03:47'!
-credit
-	^ credit.! !
+!CreditCard methodsFor: 'access' stamp: 'nme 11/21/2018 17:25:44'!
+expirationDate
+	
+	^expirationDate ! !
+
+!CreditCard methodsFor: 'access' stamp: 'nme 11/21/2018 17:24:45'!
+name
+	^name.! !
+
+!CreditCard methodsFor: 'access' stamp: 'nme 11/21/2018 17:25:23'!
+number
+	^creditCardNumber ! !
+
 
 !CreditCard methodsFor: 'initialization' stamp: 'LR 11/20/2018 06:05:08'!
 initializeWithName: aName with: aCreditCardNumber expiresOn: aGregorianMonthOfYear.
@@ -378,16 +436,12 @@ initializeWithName: aName with: aCreditCardNumber expiresOn: aGregorianMonthOfYe
 	creditCardNumber  _ aCreditCardNumber.
 	expirationDate _ aGregorianMonthOfYear.! !
 
-!CreditCard methodsFor: 'initialization' stamp: 'LR 11/20/2018 06:06:41'!
-isValid
-	^ (name size < 30) and: (creditCardNumber asString size = 16) and: (expirationDate > GregorianMonthOfYear current).! !
-
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
 !classDefinition: 'CreditCard class' category: #TusLibros!
 CreditCard class
 	instanceVariableNames: ''!
 
-!CreditCard class methodsFor: 'initialization' stamp: 'LR 11/20/2018 06:00:47'!
-name: aName with: credit expiresOn: aGregorianMonthOfYear 
-	^ CreditCard new initializeWithName: aName with: credit expiresOn: aGregorianMonthOfYear.! !
+!CreditCard class methodsFor: 'initialization' stamp: 'nme 11/21/2018 17:51:35'!
+name: aName withNumber: aNumber expiresOn: aGregorianMonthOfYear 
+	^ CreditCard new initializeWithName: aName with: aNumber expiresOn: aGregorianMonthOfYear.! !
