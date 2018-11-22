@@ -165,6 +165,12 @@ validCreditCard
 	! !
 
 
+!CashierTest methodsFor: 'merchant processor' stamp: 'NME 11/22/2018 16:24:47'!
+charge: anAmount from: aCard
+
+	simulatedMerchantProcessor value: anAmount value:aCard .! !
+
+
 !CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 13:54:05'!
 test01SholdNotAcceptAnEmptyCart
 
@@ -187,7 +193,7 @@ test01SholdNotAcceptAnEmptyCart
 			self assert: aSalesBook isEmpty].
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 13:55:49'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 16:28:04'!
 test02TotalFromAnElementCheckedOutIsThePriceInTheListsPrices
 
 	|aCart aCashier aSalesBook aDay|
@@ -199,12 +205,12 @@ test02TotalFromAnElementCheckedOutIsThePriceInTheListsPrices
 	
 	
 	simulatedMerchantProcessor := [:anAmount :aCard | ].
-	aCashier _ Cashier doCheckoutOf: aCart with: self validCreditCard  OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor.
+	aCashier _ Cashier doCheckoutOf: aCart with: self validCreditCard  OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: self.
 	
 	self assert: aCashier totalCheckOut equals: (aCart price: self anItem).
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 13:57:31'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 16:28:09'!
 test03TotalFromMoreThanAnElementCheckedOutIsTheSumOfThePrices
 
 	|aCart aCashier aSalesBook aDay|
@@ -219,12 +225,12 @@ test03TotalFromMoreThanAnElementCheckedOutIsTheSumOfThePrices
 	simulatedMerchantProcessor := [:anAmount :aCard | ].
 	
 	
-	aCashier _ Cashier doCheckoutOf: aCart with: self validCreditCard  OnDate:  aDay registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor .
+	aCashier _ Cashier doCheckoutOf: aCart with: self validCreditCard  OnDate:  aDay registeringOn: aSalesBook withMerchandtProcessor: self .
 	
 	self assert: aCashier totalCheckOut equals: (aCart price: self anItem) + (aCart price:self anotherItem ).
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 14:01:25'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 16:28:13'!
 test04CheckOutWithAnExpiredCardRaiseAnException
 
 	|aCart aDay aSalesBook|
@@ -235,13 +241,13 @@ test04CheckOutWithAnExpiredCardRaiseAnException
 	simulatedMerchantProcessor := [:anAmount :aCard | ].
 	
 	self 
-		should: [ Cashier doCheckoutOf: aCart with: self invalidCreditCardByDate  OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor ]
+		should: [ Cashier doCheckoutOf: aCart with: self invalidCreditCardByDate  OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: self ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals:  Cashier expiredCardErrorMessage.
 			self assert: aSalesBook isEmpty].! !
 
-!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 14:03:26'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 16:28:18'!
 test05CheckOutWithAnInvalidNameCardRaiseAnException
 
 	|aCart aDay aSalesBook|
@@ -252,13 +258,13 @@ test05CheckOutWithAnInvalidNameCardRaiseAnException
 	simulatedMerchantProcessor := [:anAmount :aCard | ].
 	
 	self 		
-	should: [ Cashier doCheckoutOf: aCart with: self invalidCreditCardByName  OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor ]
+	should: [ Cashier doCheckoutOf: aCart with: self invalidCreditCardByName  OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: self ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals:  Cashier invalidNameCardErrorMessage.
 			self assert: aSalesBook isEmpty].! !
 
-!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 14:06:47'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 16:28:23'!
 test06CheckOutWithAnInvalidNumberCardRaiseAnException
 
 	|aCart aDay aSalesBook |
@@ -269,13 +275,13 @@ test06CheckOutWithAnInvalidNumberCardRaiseAnException
 	simulatedMerchantProcessor := [:anAmount :aCard | ].
 	
 	self 
-		should: [ Cashier doCheckoutOf: aCart with: self invalidCreditCardByNumber OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor ]
+		should: [ Cashier doCheckoutOf: aCart with: self invalidCreditCardByNumber OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: self ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
 			self assert: anError messageText equals:  Cashier invalidNumberCardErrorMessage.
 			self assert: aSalesBook isEmpty].! !
 
-!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 13:50:32'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 16:28:28'!
 test07CheckOutRegistersASale
 
 	|aCart aCashier aSalesBook aDay total|
@@ -292,13 +298,79 @@ test07CheckOutRegistersASale
 	with: self validCreditCard 
 	OnDate: aDay 
 	registeringOn: aSalesBook
-	withMerchandtProcessor: simulatedMerchantProcessor .
+	withMerchandtProcessor: self .
 	
 	total := aCashier totalCheckOut .
 	
 	self assert: aSalesBook notEmpty.
 	self assert: aSalesBook first = total.
 	! !
+
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 16:27:39'!
+test08CheckOutWithAnStolenCardRaiseAnException
+
+	|aCart aDay aSalesBook aCashier|
+	aCart _ Cart acceptingItemsOf: self defaultCatalog.
+	aCart add: 1 of: self anItem.
+	aDay _ GregorianMonthOfYear yearNumber: 2018 monthNumber:8.
+	aSalesBook _ OrderedCollection new.
+	simulatedMerchantProcessor := [:anAmount :aCard | self error: Cashier stolenCardErrorMessage].
+	
+	aCashier _ Cashier doCheckoutOf: aCart 
+			with: self validCreditCard 
+			OnDate: aDay registeringOn: aSalesBook 
+			withMerchandtProcessor: self.
+	
+	self 
+		should: [ aCashier totalCheckOut ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText equals:  Cashier stolenCardErrorMessage.
+			self assert: aSalesBook isEmpty].! !
+
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 16:33:55'!
+test09CheckOutWithAnNonStolenRegistersASale
+
+	|aCart aDay aSalesBook aCashier total amountRecievedByMP cardRecievedByMP|
+	aCart _ Cart acceptingItemsOf: self defaultCatalog.
+	aCart add: 1 of: self anItem.
+	aDay _ GregorianMonthOfYear yearNumber: 2018 monthNumber:8.
+	aSalesBook _ OrderedCollection new.
+	simulatedMerchantProcessor := [:anAmount :aCard | amountRecievedByMP := anAmount. cardRecievedByMP := aCard.].
+	
+	aCashier _ Cashier doCheckoutOf: aCart 
+			with: self validCreditCard 
+			OnDate: aDay registeringOn: aSalesBook 
+			withMerchandtProcessor: self.
+	
+	total _ aCashier totalCheckOut.
+	
+	self assert: aSalesBook notEmpty.
+	self assert: aSalesBook first = total.
+	self assert: self validCreditCard number equals: cardRecievedByMP number.
+	self assert: total equals: amountRecievedByMP.! !
+
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 16:35:22'!
+test10CheckOutWithACreditCardWithoutCreditRaisesAnException
+
+	|aCart aDay aSalesBook aCashier|
+	aCart _ Cart acceptingItemsOf: self defaultCatalog.
+	aCart add: 1 of: self anItem.
+	aDay _ GregorianMonthOfYear yearNumber: 2018 monthNumber:8.
+	aSalesBook _ OrderedCollection new.
+	simulatedMerchantProcessor := [:anAmount :aCard | self error: Cashier withoutCreditErrorMessage].
+	
+	aCashier _ Cashier doCheckoutOf: aCart 
+			with: self validCreditCard 
+			OnDate: aDay registeringOn: aSalesBook 
+			withMerchandtProcessor: self.
+	
+	self 
+		should: [ aCashier totalCheckOut ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText equals:  Cashier withoutCreditErrorMessage.
+			self assert: aSalesBook isEmpty].! !
 
 
 !classDefinition: #CreditCardTest category: #TusLibros!
@@ -429,10 +501,12 @@ initializeCheckOutOf:aCart with:aCreditCard onDate:aDay registerOn: aSalesBook w
 	merchantProcessor _ simulatedMerchantProcessor .! !
 
 
-!Cashier methodsFor: 'checkingOut' stamp: 'NME 11/22/2018 13:50:03'!
+!Cashier methodsFor: 'checkingOut' stamp: 'NME 11/22/2018 16:11:41'!
 totalCheckOut
 	|totalSale|
 	totalSale _  cart items inject: 0 into:[:total :item| total+ (cart price: item)]. 
+	
+	merchantProcessor charge: totalSale from: creditCard.
 	
 	salesBook add: totalSale.
 	
@@ -471,6 +545,15 @@ invalidNameCardErrorMessage
 !Cashier class methodsFor: 'error messages' stamp: 'nme 11/21/2018 19:31:59'!
 invalidNumberCardErrorMessage
 	^'Invalid Number'! !
+
+!Cashier class methodsFor: 'error messages' stamp: 'NME 11/22/2018 16:35:51'!
+withoutCreditErrorMessage
+^ 'Withot credit'! !
+
+
+!Cashier class methodsFor: 'as yet unclassified' stamp: 'NME 11/22/2018 16:15:02'!
+stolenCardErrorMessage
+	^'Stolen Card'! !
 
 
 !classDefinition: #CreditCard category: #TusLibros!
