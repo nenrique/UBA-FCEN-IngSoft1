@@ -116,7 +116,7 @@ itemSellByTheStore
 
 !classDefinition: #CashierTest category: #TusLibros!
 TestCase subclass: #CashierTest
-	instanceVariableNames: 'cashier'
+	instanceVariableNames: 'cashier simulatedMerchantProcessor'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -165,83 +165,140 @@ validCreditCard
 	! !
 
 
-!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:38:28'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 13:54:05'!
 test01SholdNotAcceptAnEmptyCart
 
-	|aCart aDate |
+	|aCart aDate aSalesBook |
 	aCart _ Cart acceptingItemsOf: self defaultCatalog.
 	aDate _(GregorianMonthOfYear yearNumber: 2017 monthNumber:1) .
+	aSalesBook _ OrderedCollection new.
+	simulatedMerchantProcessor := [:anAmount :aCard | ].
 	
 	
-	self 
-		should: [ Cashier doCheckoutOf: aCart with:self validCreditCard OnDate: aDate.]
+	self
+		should: [ Cashier doCheckoutOf: aCart 
+			with: self validCreditCard 
+			OnDate: aDate 
+			registeringOn:  aSalesBook 
+			withMerchandtProcessor: simulatedMerchantProcessor ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText equals:  Cashier emptyCartErrorMessage].
+			self assert: anError messageText equals:  Cashier emptyCartErrorMessage.
+			self assert: aSalesBook isEmpty].
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:38:38'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 13:55:49'!
 test02TotalFromAnElementCheckedOutIsThePriceInTheListsPrices
 
-	|aCart aCashier |
+	|aCart aCashier aSalesBook aDay|
 	aCart _ Cart acceptingItemsOf: self defaultCatalog.
 	aCart add: 1 of: self anItem.
-	aCashier _ Cashier doCheckoutOf: aCart with:self validCreditCard OnDate: (GregorianMonthOfYear yearNumber: 2017 monthNumber:1) .
+	
+	aSalesBook _ OrderedCollection new.
+	aDay _ (GregorianMonthOfYear yearNumber: 2017 monthNumber:1) . 
+	
+	
+	simulatedMerchantProcessor := [:anAmount :aCard | ].
+	aCashier _ Cashier doCheckoutOf: aCart with: self validCreditCard  OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor.
 	
 	self assert: aCashier totalCheckOut equals: (aCart price: self anItem).
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:38:47'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 13:57:31'!
 test03TotalFromMoreThanAnElementCheckedOutIsTheSumOfThePrices
 
-	|aCart aCashier|
+	|aCart aCashier aSalesBook aDay|
 	aCart _ Cart acceptingItemsOf: self defaultCatalog.
 	aCart add: 1 of: self anItem.
 	aCart  add: 1 of: self anotherItem.
 	
-	aCashier _ Cashier doCheckoutOf: aCart with: self validCreditCard OnDate: (GregorianMonthOfYear yearNumber: 2017 monthNumber:1) . 
+	aSalesBook _ OrderedCollection new.
+	aDay _ (GregorianMonthOfYear yearNumber: 2017 monthNumber:1) . 
+	
+	
+	simulatedMerchantProcessor := [:anAmount :aCard | ].
+	
+	
+	aCashier _ Cashier doCheckoutOf: aCart with: self validCreditCard  OnDate:  aDay registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor .
 	
 	self assert: aCashier totalCheckOut equals: (aCart price: self anItem) + (aCart price:self anotherItem ).
 	! !
 
-!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:19:27'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 14:01:25'!
 test04CheckOutWithAnExpiredCardRaiseAnException
 
-	|aCart |
+	|aCart aDay aSalesBook|
 	aCart _ Cart acceptingItemsOf: self defaultCatalog.
 	aCart add: 1 of: self anItem.
+	aDay _ GregorianMonthOfYear yearNumber: 2018 monthNumber:8.
+	aSalesBook _ OrderedCollection new.
+	simulatedMerchantProcessor := [:anAmount :aCard | ].
 	
 	self 
-		should: [ Cashier doCheckoutOf: aCart with:self invalidCreditCardByDate OnDate: (GregorianMonthOfYear yearNumber: 2018 monthNumber:8)]
+		should: [ Cashier doCheckoutOf: aCart with: self invalidCreditCardByDate  OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText equals:  Cashier expiredCardErrorMessage].! !
+			self assert: anError messageText equals:  Cashier expiredCardErrorMessage.
+			self assert: aSalesBook isEmpty].! !
 
-!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:34:00'!
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 14:03:26'!
 test05CheckOutWithAnInvalidNameCardRaiseAnException
 
-	|aCart |
+	|aCart aDay aSalesBook|
 	aCart _ Cart acceptingItemsOf: self defaultCatalog.
 	aCart add: 1 of: self anItem.
+	aDay _ GregorianMonthOfYear yearNumber: 2018 monthNumber:8.
+	aSalesBook _ OrderedCollection new.
+	simulatedMerchantProcessor := [:anAmount :aCard | ].
 	
-	self 
-		should: [ Cashier doCheckoutOf: aCart with:self invalidCreditCardByName OnDate: (GregorianMonthOfYear yearNumber: 2018 monthNumber:8)]
+	self 		
+	should: [ Cashier doCheckoutOf: aCart with: self invalidCreditCardByName  OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText equals:  Cashier invalidNameCardErrorMessage].! !
+			self assert: anError messageText equals:  Cashier invalidNameCardErrorMessage.
+			self assert: aSalesBook isEmpty].! !
 
-!CashierTest methodsFor: 'tests' stamp: 'nme 11/21/2018 19:34:33'!
-test05CheckOutWithAnInvalidNumberCardRaiseAnException
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 14:06:47'!
+test06CheckOutWithAnInvalidNumberCardRaiseAnException
 
-	|aCart |
+	|aCart aDay aSalesBook |
 	aCart _ Cart acceptingItemsOf: self defaultCatalog.
 	aCart add: 1 of: self anItem.
+	aDay _ GregorianMonthOfYear yearNumber: 2018 monthNumber:8.
+	aSalesBook _ OrderedCollection new.
+	simulatedMerchantProcessor := [:anAmount :aCard | ].
 	
 	self 
-		should: [ Cashier doCheckoutOf: aCart with:self invalidCreditCardByNumber OnDate: (GregorianMonthOfYear yearNumber: 2018 monthNumber:8)]
+		should: [ Cashier doCheckoutOf: aCart with: self invalidCreditCardByNumber OnDate: aDay registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText equals:  Cashier invalidNumberCardErrorMessage].! !
+			self assert: anError messageText equals:  Cashier invalidNumberCardErrorMessage.
+			self assert: aSalesBook isEmpty].! !
+
+!CashierTest methodsFor: 'tests' stamp: 'NME 11/22/2018 13:50:32'!
+test07CheckOutRegistersASale
+
+	|aCart aCashier aSalesBook aDay total|
+	aCart _ Cart acceptingItemsOf: self defaultCatalog.
+	aCart add: 1 of: self anItem.
+	aCart  add: 1 of: self anotherItem.
+	aSalesBook _ OrderedCollection new.
+	aDay _ (GregorianMonthOfYear yearNumber: 2017 monthNumber:1) . 
+	
+	
+	simulatedMerchantProcessor := [:anAmount :aCard | ].
+	
+	aCashier _ Cashier doCheckoutOf: aCart 
+	with: self validCreditCard 
+	OnDate: aDay 
+	registeringOn: aSalesBook
+	withMerchandtProcessor: simulatedMerchantProcessor .
+	
+	total := aCashier totalCheckOut .
+	
+	self assert: aSalesBook notEmpty.
+	self assert: aSalesBook first = total.
+	! !
 
 
 !classDefinition: #CreditCardTest category: #TusLibros!
@@ -357,23 +414,29 @@ acceptingItemsOf: aCatalog
 
 !classDefinition: #Cashier category: #TusLibros!
 Object subclass: #Cashier
-	instanceVariableNames: 'cart total creditCard date'
+	instanceVariableNames: 'cart total creditCard date salesBook merchantProcessor'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!Cashier methodsFor: 'initialization' stamp: 'nme 11/21/2018 17:54:45'!
-initializeCheckOutOf: aCart with: aCreditCard onDate: aDate.
+!Cashier methodsFor: 'initialization' stamp: 'NME 11/22/2018 13:45:37'!
+initializeCheckOutOf:aCart with:aCreditCard onDate:aDay registerOn: aSalesBook withMerchandtProcessor:simulatedMerchantProcessor .
  
 	cart _ aCart.
 	creditCard _ aCreditCard .
-	date _ aDate.	! !
+	date _ aDay.	
+	salesBook _ aSalesBook .
+	merchantProcessor _ simulatedMerchantProcessor .! !
 
 
-!Cashier methodsFor: 'checkingOut' stamp: 'nme 11/21/2018 18:23:52'!
+!Cashier methodsFor: 'checkingOut' stamp: 'NME 11/22/2018 13:50:03'!
 totalCheckOut
+	|totalSale|
+	totalSale _  cart items inject: 0 into:[:total :item| total+ (cart price: item)]. 
 	
-	^ cart items inject: 0 into:[:total :item| total+ (cart price: item)]. ! !
+	salesBook add: totalSale.
+	
+	^totalSale.! !
 
 "-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
 
@@ -381,15 +444,16 @@ totalCheckOut
 Cashier class
 	instanceVariableNames: ''!
 
-!Cashier class methodsFor: 'initialization' stamp: 'nme 11/21/2018 19:41:08'!
-doCheckoutOf: aCart with: aCreditCard OnDate: aDate 
+!Cashier class methodsFor: 'initialization' stamp: 'NME 11/22/2018 13:40:45'!
+doCheckoutOf: aCart with:aCreditCard  OnDate: aDay  registeringOn: aSalesBook withMerchandtProcessor: simulatedMerchantProcessor
 	
-	(aCreditCard expirationDate< aDate ) ifTrue: [self error: self expiredCardErrorMessage].
+	
+	(aCreditCard expirationDate< aDay ) ifTrue: [self error: self expiredCardErrorMessage].
 	(aCreditCard name size >30) ifTrue: [self error: self invalidNameCardErrorMessage].
 	(aCreditCard number asString size= 16) ifFalse: [self error: self invalidNumberCardErrorMessage].
 	aCart isEmpty ifTrue: [self error: self emptyCartErrorMessage].
 	
-	^self new initializeCheckOutOf:aCart with:aCreditCard onDate:aDate .! !
+	^self new initializeCheckOutOf:aCart with:aCreditCard onDate:aDay registerOn: aSalesBook withMerchandtProcessor:simulatedMerchantProcessor .! !
 
 
 !Cashier class methodsFor: 'error messages' stamp: 'nme 11/15/2018 18:40:43'!
