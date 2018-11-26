@@ -290,41 +290,22 @@ test03CantCreateCartWithInvalidUserId
 			self assert: anError messageText = RestInterface invalidUserIdErrorMessage.
 			].! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 19:00:03'!
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 20:52:40'!
 test05ListCartItemsAfterAddingItems
 
- 	| carritoId users  |
-	
-	users _ Dictionary new.
-	users at: 0 put: 'contraseña'.
+ 	| carritoId |
 	
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
 	interfaz addToCart: carritoId aQuantityOf: 3 item: testObjectsFactory itemSellByTheStore .
 	
 	self assert: (interfaz listCart: carritoId) size = 3.! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 19:08:06'!
-test06ListCartItemsAfterMoreThan30MinutesHavePassed
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 20:55:01'!
+test06CantListItemsWithWrongId
 
- 	| carritoId users  |
-	
-	users _ Dictionary new.
-	users at: 0 put: 'contraseña'.
-	
-	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
-	
-	self assert: (interfaz listCart: carritoId) isEmpty.! !
-
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 19:07:47'!
-test07AddItemsToCartAfterMoreThan30MinutesHavePassed
-
- 	| carritoId users  |
-	
-	users _ Dictionary new.
-	users at: 0 put: 'contraseña'.
-	
-	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
-	interfaz addToCart: carritoId aQuantityOf: 3 item: testObjectsFactory itemSellByTheStore .! !
+	self should: [ interfaz listCart: 40. ]
+		  raise: Error - MessageNotUnderstood
+		  withExceptionDo: [ :anError | self assert: anError messageText = RestInterface invalidCartIdErrorMessage . ].! !
 
 !RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 19:07:09'!
 test10ACantAddAnInvalidNumberOfItemsIntoTheCart
@@ -359,6 +340,29 @@ test15CheckOutCart
 	
 	self assert: (interfaz listCart: carritoId) size = 0.
 	self assert: (interfaz listPurchasesFrom: 0 withPassword: 'contraseña') = itemsComprados.! !
+
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 20:51:08'!
+test20ListCartItemsAfterMoreThan30MinutesHavePassed
+
+ 	| carritoId users  |
+	
+	users _ Dictionary new.
+	users at: 0 put: 'contraseña'.
+	
+	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
+	
+	self assert: (interfaz listCart: carritoId) isEmpty.! !
+
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 20:51:15'!
+test21AddItemsToCartAfterMoreThan30MinutesHavePassed
+
+ 	| carritoId users  |
+	
+	users _ Dictionary new.
+	users at: 0 put: 'contraseña'.
+	
+	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
+	interfaz addToCart: carritoId aQuantityOf: 3 item: testObjectsFactory itemSellByTheStore .! !
 
 
 !classDefinition: #Cart category: #TusLibros!
@@ -600,24 +604,25 @@ initializeInterfaceWithUsers: aDictionary
 	carts _ Dictionary new.
 	carritoId _ 0.! !
 
-!RestInterface methodsFor: 'initialization' stamp: 'LR 11/26/2018 18:17:30'!
+!RestInterface methodsFor: 'initialization' stamp: 'LR 11/26/2018 20:57:17'!
 initializeInterfaceWithUsers: aDictionary andCatalog: aCatalog
 	
 	catalog _ aCatalog .
 	users _ aDictionary .
 	carts _ Dictionary new.
 	boughtItems _ Dictionary new.
-	carritoId _ 0.! !
+	carritoId _ 0.
+	cartsLastAccessTime _ Dictionary new.! !
 
 
 !RestInterface methodsFor: 'accessing' stamp: 'nme 11/22/2018 20:26:01'!
 getCarritoWithId: id 
 	^ carts at: id.! !
 
-!RestInterface methodsFor: 'accessing' stamp: 'LR 11/26/2018 06:03:28'!
+!RestInterface methodsFor: 'accessing' stamp: 'LR 11/26/2018 20:57:45'!
 listCart: cartId 
 	
-	^ (carts at: cartId) items.! !
+	^ (carts at: cartId ifAbsent: [ self error: self class invalidCartIdErrorMessage ] ) items.! !
 
 !RestInterface methodsFor: 'accessing' stamp: 'LR 11/26/2018 18:05:01'!
 listPurchasesFrom: clientId withPassword: password 
@@ -649,6 +654,10 @@ RestInterface class
 !RestInterface class methodsFor: 'initialization' stamp: 'nme 11/22/2018 21:19:24'!
 initializeWithUsers: users andCatalog: aCatalog
 	^ self new initializeInterfaceWithUsers: users andCatalog: aCatalog .! !
+
+!RestInterface class methodsFor: 'initialization' stamp: 'LR 11/26/2018 20:54:43'!
+invalidCartIdErrorMessage
+	^ 'Invalid or inexistent cart id'.! !
 
 !RestInterface class methodsFor: 'initialization' stamp: 'nme 11/22/2018 20:35:11'!
 invalidPasswordErrorMessage
