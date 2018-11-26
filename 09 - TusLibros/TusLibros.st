@@ -261,13 +261,13 @@ setUp
 	users at: 0 put: 'contraseña'.
 	interfaz :=  RestInterface initializeWithUsers: users andCatalog: testObjectsFactory defaultCatalog.! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 18:49:42'!
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 20:48:54'!
 test01CreateCartWithValidUserAndPassword
  	
 	| carritoId |
 	
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
-	self assert: (1 = carritoId).! !
+	self assert: (interfaz listCart: carritoId) isEmpty.! !
 
 !RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 18:49:49'!
 test02CantCreateCartWithInvalidPassword
@@ -289,15 +289,6 @@ test03CantCreateCartWithInvalidUserId
 		withExceptionDo: [ :anError |
 			self assert: anError messageText = RestInterface invalidUserIdErrorMessage.
 			].! !
-
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 18:59:39'!
-test04ListCartItemsAfterCreatingCart
-	
-	| carritoId |
-	
-	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
-	self assert: (1 = carritoId).
-	self assert: (interfaz listCart: carritoId) isEmpty.! !
 
 !RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 19:00:03'!
 test05ListCartItemsAfterAddingItems
@@ -582,20 +573,20 @@ expiringOn: aMonth
 
 !classDefinition: #RestInterface category: #TusLibros!
 Object subclass: #RestInterface
-	instanceVariableNames: 'users carts carritos carritoId catalog boughtItems currentTime'
+	instanceVariableNames: 'users carts carritos carritoId catalog boughtItems currentTime cartsLastAccessTime'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!RestInterface methodsFor: 'initialization' stamp: 'LR 11/26/2018 06:00:55'!
-createCartwithUID: id andPassword: password
-	| oldId  | 	
+!RestInterface methodsFor: 'initialization' stamp: 'LR 11/26/2018 19:19:59'!
+createCartwithUID: id andPassword: password	
 	
 	(users at: id ifAbsent: [self error: self class invalidUserIdErrorMessage ]).
 	(users at: id) = password ifFalse: [ self error: self class invalidPasswordErrorMessage. ]. 
 	
 	carritoId _ carritoId + 1.
 	carts at: carritoId put: (Cart acceptingItemsOf: catalog).
+	cartsLastAccessTime at: carritoId put: 0.
 	
 	^ carritoId.
 
