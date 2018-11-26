@@ -246,72 +246,83 @@ debit: anAmount from: aCreditCard
 	^debitBehavior value: anAmount value: aCreditCard ! !
 
 
-!classDefinition: #InterfazTests category: #TusLibros!
-TestCase subclass: #InterfazTests
-	instanceVariableNames: 'testObjectsFactory interfaz users'
+!classDefinition: #SistemaTests category: #TusLibros!
+TestCase subclass: #SistemaTests
+	instanceVariableNames: 'testObjectsFactory interfaz users sistema creditCard creditCardExpiration creditCardUser'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!InterfazTests methodsFor: 'testing' stamp: 'nme 11/22/2018 21:25:27'!
+!SistemaTests methodsFor: 'testing' stamp: 'LR 11/26/2018 04:39:40'!
 setUp 
 
 	testObjectsFactory := StoreTestObjectsFactory new.
 	users _ Dictionary new.
 	users at: 0 put: 'contraseña'.
-	interfaz :=  Interfaz initializeWithUsers: users andCatalog: testObjectsFactory defaultCatalog.! !
+	sistema :=  Sistema initializeWithUsers: users andCatalog: testObjectsFactory defaultCatalog.! !
 
-!InterfazTests methodsFor: 'testing' stamp: 'nme 11/22/2018 21:22:32'!
+!SistemaTests methodsFor: 'testing' stamp: 'LR 11/26/2018 06:02:12'!
 test01CreateCartWithOneUser
  	
-	| carritoId carrito |
+	| carritoId |
 	
-	
-	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
-	self assert: (0 = carritoId).
-	carrito _ interfaz getCarritoWithId: carritoId.
-	self assert: carrito isEmpty.! !
+	carritoId _ (sistema createCartwithUID: 0 andPassword: 'contraseña').
+	self assert: (1 = carritoId).
+	self assert: (sistema listCart: carritoId) isEmpty.! !
 
-!InterfazTests methodsFor: 'testing' stamp: 'nme 11/22/2018 21:23:24'!
+!SistemaTests methodsFor: 'testing' stamp: 'LR 11/26/2018 04:40:28'!
 test02CreateCartWithInvalidPassword
  	
 	
 	self 
-		should: [ (interfaz createCartwithUID: 0 andPassword: 'password'). ]
+		should: [ (sistema createCartwithUID: 0 andPassword: 'password'). ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText = Interfaz invalidPasswordErrorMessage.
+			self assert: anError messageText = Sistema invalidPasswordErrorMessage.
 			].! !
 
-!InterfazTests methodsFor: 'testing' stamp: 'nme 11/22/2018 21:23:35'!
+!SistemaTests methodsFor: 'testing' stamp: 'LR 11/26/2018 04:39:45'!
 test03CreateCartWithInvalidUserId
  	
 	
 	self 
-		should: [ (interfaz createCartwithUID: 1 andPassword: 'password'). ]
+		should: [ (sistema createCartwithUID: 1 andPassword: 'password'). ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
-			self assert: anError messageText = Interfaz invalidUserIdErrorMessage.
+			self assert: anError messageText = Sistema invalidUserIdErrorMessage.
 			].! !
 
-!InterfazTests methodsFor: 'testing' stamp: 'nme 11/22/2018 20:59:05'!
+!SistemaTests methodsFor: 'testing' stamp: 'LR 11/26/2018 06:10:11'!
 test04AddToCart
 
- 	| carritoId interfaz users  |
+ 	| carritoId users  |
 	
 	users _ Dictionary new.
 	users at: 0 put: 'contraseña'.
 	
-	interfaz _ Interfaz initializeWithUsers: users.
-	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
-	interfaz addToCart: carritoId aQuantityOf: 3 item: testObjectsFactory itemSellByTheStore .
+	carritoId _ (sistema createCartwithUID: 0 andPassword: 'contraseña').
+	sistema addToCart: carritoId aQuantityOf: 3 item: testObjectsFactory itemSellByTheStore .
 	
-	self assert: (interfaz itemsCart: carritoId) = 3.! !
+	self assert: (sistema listCart: carritoId) size = 3.! !
+
+!SistemaTests methodsFor: 'testing' stamp: 'LR 11/26/2018 06:11:29'!
+test05CheckOutCart
+
+ 	| carritoId users  |
+	
+	users _ Dictionary new.
+	users at: 0 put: 'contraseña'.
+	
+	carritoId _ (sistema createCartwithUID: 0 andPassword: 'contraseña').
+	sistema addToCart: carritoId aQuantityOf: 3 item: testObjectsFactory itemSellByTheStore .
+	sistema checkoutCart: carritoId withCreditCard: creditCard withExpirationDate: creditCardExpiration andName: creditCardUser.
+	
+	self assert: (sistema listCart: carritoId) size = 0.! !
 
 
 !classDefinition: #Cart category: #TusLibros!
 Object subclass: #Cart
-	instanceVariableNames: 'catalog items'
+	instanceVariableNames: 'catalog items startTime'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
@@ -519,90 +530,6 @@ expiringOn: aMonth
 	^self new initializeExpiringOn: aMonth! !
 
 
-!classDefinition: #Interfaz category: #TusLibros!
-Object subclass: #Interfaz
-	instanceVariableNames: 'users carts carritos carritoId catalog'
-	classVariableNames: ''
-	poolDictionaries: ''
-	category: 'TusLibros'!
-
-!Interfaz methodsFor: 'initialization' stamp: 'nme 11/22/2018 21:20:04'!
-createCartwithUID: id andPassword: password
-	| oldId  | 	
-	
-	(users at: id ifAbsent: [self error: self class invalidUserIdErrorMessage ]).
-	(users at: id) = password ifFalse: [ self error: self class invalidPasswordErrorMessage. ]. 
-
-	carts at: carritoId put: (Cart acceptingItemsOf: catalog).
-	oldId _ carritoId.
-	carritoId _ carritoId + 1.
-	^ oldId.
-
-	"((users at: id) = password" 
-	 ! !
-
-!Interfaz methodsFor: 'initialization' stamp: 'nme 11/22/2018 20:47:24'!
-initializeInterfaceWithUsers: aDictionary 
-	
-	users _ aDictionary .
-	carts _ Dictionary new.
-	carritoId _ 0.! !
-
-!Interfaz methodsFor: 'initialization' stamp: 'nme 11/22/2018 21:19:46'!
-initializeInterfaceWithUsers: aDictionary andCatalog: aCatalog
-	
-	catalog _ aCatalog .
-	users _ aDictionary .
-	carts _ Dictionary new.
-	carritoId _ 0.! !
-
-
-!Interfaz methodsFor: 'accessing' stamp: 'nme 11/22/2018 20:26:01'!
-getCarritoWithId: id 
-	^ carts at: id.! !
-
-!Interfaz methodsFor: 'accessing' stamp: 'nme 11/22/2018 20:58:07'!
-itemsCart: cartId 
-	|aCart|
-	
-	aCart _ carts at: cartId.
-	
-	^aCart items size! !
-
-
-!Interfaz methodsFor: 'as yet unclassified' stamp: 'nme 11/22/2018 20:55:31'!
-addToCart: carritoId aQuantityOf: cant item: item
-
-	|aCart|
-	
-	aCart _ carts at: carritoId.
-	
-	aCart add: cant of:item. 
-	! !
-
-"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
-
-!classDefinition: 'Interfaz class' category: #TusLibros!
-Interfaz class
-	instanceVariableNames: ''!
-
-!Interfaz class methodsFor: 'initialization' stamp: 'nme 11/22/2018 19:55:31'!
-initializeWithUsers: aDictionary 
-	^ self new initializeInterfaceWithUsers: aDictionary .! !
-
-!Interfaz class methodsFor: 'initialization' stamp: 'nme 11/22/2018 21:19:24'!
-initializeWithUsers: users andCatalog: aCatalog
-	^ self new initializeInterfaceWithUsers: users andCatalog: aCatalog .! !
-
-!Interfaz class methodsFor: 'initialization' stamp: 'nme 11/22/2018 20:35:11'!
-invalidPasswordErrorMessage
-	^ 'Invalid password'.! !
-
-!Interfaz class methodsFor: 'initialization' stamp: 'nme 11/22/2018 20:37:23'!
-invalidUserIdErrorMessage
-	^ 'Invalid or inexistent user id'.! !
-
-
 !classDefinition: #Sale category: #TusLibros!
 Object subclass: #Sale
 	instanceVariableNames: 'total'
@@ -632,6 +559,87 @@ of: aTotal
 
 	"should assert total is not negative or 0!!"
 	^self new initializeTotal: aTotal ! !
+
+
+!classDefinition: #Sistema category: #TusLibros!
+Object subclass: #Sistema
+	instanceVariableNames: 'users carts carritos carritoId catalog'
+	classVariableNames: ''
+	poolDictionaries: ''
+	category: 'TusLibros'!
+
+!Sistema methodsFor: 'initialization' stamp: 'LR 11/26/2018 06:00:55'!
+createCartwithUID: id andPassword: password
+	| oldId  | 	
+	
+	(users at: id ifAbsent: [self error: self class invalidUserIdErrorMessage ]).
+	(users at: id) = password ifFalse: [ self error: self class invalidPasswordErrorMessage. ]. 
+	
+	carritoId _ carritoId + 1.
+	carts at: carritoId put: (Cart acceptingItemsOf: catalog).
+	
+	^ carritoId.
+
+	"((users at: id) = password" 
+	 ! !
+
+!Sistema methodsFor: 'initialization' stamp: 'nme 11/22/2018 20:47:24'!
+initializeInterfaceWithUsers: aDictionary 
+	
+	users _ aDictionary .
+	carts _ Dictionary new.
+	carritoId _ 0.! !
+
+!Sistema methodsFor: 'initialization' stamp: 'nme 11/22/2018 21:19:46'!
+initializeInterfaceWithUsers: aDictionary andCatalog: aCatalog
+	
+	catalog _ aCatalog .
+	users _ aDictionary .
+	carts _ Dictionary new.
+	carritoId _ 0.! !
+
+
+!Sistema methodsFor: 'accessing' stamp: 'nme 11/22/2018 20:26:01'!
+getCarritoWithId: id 
+	^ carts at: id.! !
+
+!Sistema methodsFor: 'accessing' stamp: 'LR 11/26/2018 06:03:28'!
+listCart: cartId 
+	
+	^ (carts at: cartId) items.! !
+
+
+!Sistema methodsFor: 'as yet unclassified' stamp: 'nme 11/22/2018 20:55:31'!
+addToCart: carritoId aQuantityOf: cant item: item
+
+	|aCart|
+	
+	aCart _ carts at: carritoId.
+	
+	aCart add: cant of:item. 
+	! !
+
+"-- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- "!
+
+!classDefinition: 'Sistema class' category: #TusLibros!
+Sistema class
+	instanceVariableNames: ''!
+
+!Sistema class methodsFor: 'initialization' stamp: 'nme 11/22/2018 19:55:31'!
+initializeWithUsers: aDictionary 
+	^ self new initializeInterfaceWithUsers: aDictionary .! !
+
+!Sistema class methodsFor: 'initialization' stamp: 'nme 11/22/2018 21:19:24'!
+initializeWithUsers: users andCatalog: aCatalog
+	^ self new initializeInterfaceWithUsers: users andCatalog: aCatalog .! !
+
+!Sistema class methodsFor: 'initialization' stamp: 'nme 11/22/2018 20:35:11'!
+invalidPasswordErrorMessage
+	^ 'Invalid password'.! !
+
+!Sistema class methodsFor: 'initialization' stamp: 'nme 11/22/2018 20:37:23'!
+invalidUserIdErrorMessage
+	^ 'Invalid or inexistent user id'.! !
 
 
 !classDefinition: #StoreTestObjectsFactory category: #TusLibros!
