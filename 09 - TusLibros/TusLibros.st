@@ -307,7 +307,7 @@ test06CantListItemsWithWrongId
 		  raise: Error - MessageNotUnderstood
 		  withExceptionDo: [ :anError | self assert: anError messageText = RestInterface invalidCartIdErrorMessage . ].! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 19:07:09'!
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 20:59:13'!
 test10ACantAddAnInvalidNumberOfItemsIntoTheCart
 
  	| carritoId users  |
@@ -319,7 +319,7 @@ test10ACantAddAnInvalidNumberOfItemsIntoTheCart
 	
 	self should: [ interfaz addToCart: carritoId aQuantityOf: 0 item: testObjectsFactory itemSellByTheStore. ]
 		  raise: Error - MessageNotUnderstood
-		  withExceptionDo: [ :anError | self assert: anError messageText = Cart invalidQuantityErrorMessage .].
+		  withExceptionDo: [ :anError | self assert: anError messageText = RestInterface invalidQuantityErrorMessage .].
 
 	! !
 
@@ -377,7 +377,7 @@ invalidItemErrorMessage
 	
 	^'Item is not in catalog'! !
 
-!Cart methodsFor: 'error messages' stamp: 'HernanWilkinson 6/17/2013 17:45'!
+!Cart methodsFor: 'error messages' stamp: 'LR 11/26/2018 20:59:38'!
 invalidQuantityErrorMessage
 	
 	^'Invalid number of items'! !
@@ -655,15 +655,21 @@ RestInterface class
 initializeWithUsers: users andCatalog: aCatalog
 	^ self new initializeInterfaceWithUsers: users andCatalog: aCatalog .! !
 
-!RestInterface class methodsFor: 'initialization' stamp: 'LR 11/26/2018 20:54:43'!
+
+!RestInterface class methodsFor: 'error messages' stamp: 'LR 11/26/2018 20:54:43'!
 invalidCartIdErrorMessage
 	^ 'Invalid or inexistent cart id'.! !
 
-!RestInterface class methodsFor: 'initialization' stamp: 'nme 11/22/2018 20:35:11'!
+!RestInterface class methodsFor: 'error messages' stamp: 'nme 11/22/2018 20:35:11'!
 invalidPasswordErrorMessage
 	^ 'Invalid password'.! !
 
-!RestInterface class methodsFor: 'initialization' stamp: 'nme 11/22/2018 20:37:23'!
+!RestInterface class methodsFor: 'error messages' stamp: 'LR 11/26/2018 20:59:47'!
+invalidQuantityErrorMessage
+	
+	^'Invalid number of items'! !
+
+!RestInterface class methodsFor: 'error messages' stamp: 'nme 11/22/2018 20:37:23'!
 invalidUserIdErrorMessage
 	^ 'Invalid or inexistent user id'.! !
 
