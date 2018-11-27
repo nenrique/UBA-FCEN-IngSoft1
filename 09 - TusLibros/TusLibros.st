@@ -261,13 +261,21 @@ setUp
 	users at: 0 put: 'contraseña'.
 	interfaz :=  RestInterface initializeWithUsers: users andCatalog: testObjectsFactory defaultCatalog.! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 20:48:54'!
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 21:05:32'!
 test01CreateCartWithValidUserAndPassword
  	
 	| carritoId |
 	
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
-	self assert: (interfaz listCart: carritoId) isEmpty.! !
+	self assert: (interfaz listCart: carritoId) isEmpty.
+	
+	" Escribo ideas habladas en clase antes de olvidarme:
+	
+	Hay que tener un especie de '''CartSession''' que junte al carrito, tiempo de expiración y un par de cosas más, a este se le van a preguntar muchas cosas que son código repetido.
+	Hay que crear un clock aparte y pasarselo a la interfaz rest cuando se crea, este reloj tiene que tener advance by minutes y go back by minutes para hacer los tests correspondientes.
+	Hay que volver a testear algunas cosas que ya testeabamos en el cashier y e lcart, por ej que el checkout sea de un user correcto y la contraseña sea valida etc. (Hay que ver si es TDD o estamos haciendo testing general, lo ulitmo no esta mal).
+	Hay que agregar un especie de 'Ticket' para la parte de listar purchases ya que este tiene que responder varios mensajes como la lista y el precio total.
+	Si hay un error que throwea el cart o cashier etc, hay que testear sobre ese error (es deir no atraparlo en la interfaz, pero si poner un mensaje de error en la interfaz que sea igual al que tiene el cart cashier o creditcard)."! !
 
 !RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 18:49:49'!
 test02CantCreateCartWithInvalidPassword
