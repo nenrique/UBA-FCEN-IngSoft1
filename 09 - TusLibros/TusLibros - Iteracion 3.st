@@ -270,23 +270,16 @@ setUp
 	
 	interfaz :=  RestInterface initializeWithUsers: users andCatalog: testObjectsFactory defaultCatalog withMerchantProcessor: self withSalesBook: OrderedCollection new withTimer: clock.! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 21:05:32'!
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 08:31:38'!
 test01CreateCartWithValidUserAndPassword
  	
 	| carritoId |
 	
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
 	self assert: (interfaz listCart: carritoId) isEmpty.
-	
-	" Escribo ideas habladas en clase antes de olvidarme:
-	
-	Hay que tener un especie de '''CartSession''' que junte al carrito, tiempo de expiración y un par de cosas más, a este se le van a preguntar muchas cosas que son código repetido.
-	Hay que crear un clock aparte y pasarselo a la interfaz rest cuando se crea, este reloj tiene que tener advance by minutes y go back by minutes para hacer los tests correspondientes.
-	Hay que volver a testear algunas cosas que ya testeabamos en el cashier y e lcart, por ej que el checkout sea de un user correcto y la contraseña sea valida etc. (Hay que ver si es TDD o estamos haciendo testing general, lo ulitmo no esta mal).
-	Hay que agregar un especie de 'Ticket' para la parte de listar purchases ya que este tiene que responder varios mensajes como la lista y el precio total.
-	Si hay un error que throwea el cart o cashier etc, hay que testear sobre ese error (es deir no atraparlo en la interfaz, pero si poner un mensaje de error en la interfaz que sea igual al que tiene el cart cashier o creditcard)."! !
+! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 18:49:49'!
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 05:58:53'!
 test02CantCreateCartWithInvalidPassword
  	
 	self 
@@ -296,7 +289,7 @@ test02CantCreateCartWithInvalidPassword
 			self assert: anError messageText = RestInterface invalidPasswordErrorMessage.
 			].! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'NME 12/2/2018 20:35:22'!
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 07:11:06'!
 test03CantCreateCartWithInvalidUserId
  	
 	
@@ -406,7 +399,7 @@ test12CantCheckOutAnEmpyCart
 		  withExceptionDo: [ :anError | self assert: anError messageText = Cashier cartCanNotBeEmptyErrorMessage].
 ! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 05:26:49'!
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 05:58:43'!
 test13CantCheckOutWithAnExpiredCreditCard
  	| carritoId  |
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
@@ -418,7 +411,7 @@ test13CantCheckOutWithAnExpiredCreditCard
 		  withExceptionDo: [ :anError | self assert: anError messageText = Cashier canNotChargeAnExpiredCreditCardErrorMessage].
 ! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 05:35:15'!
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 07:10:03'!
 test14ListPurchasesWhenValidIdAndPassword
 
  	| carritoId purchases |
@@ -427,36 +420,47 @@ test14ListPurchasesWhenValidIdAndPassword
 	
 	interfaz checkoutCart: carritoId withCreditCard: testObjectsFactory notExpiredCreditCard withExpirationDate: testObjectsFactory creditCardNotExpirationDate andName: 'name'.
 
-	purchases _ interfaz listPurchasesFrom: 'name' withPassword: 'contraseña'.
+	purchases _ interfaz listPurchasesFrom: 0 withPassword: 'contraseña'.
 
 	self assert: (purchases size) = 1.
 	self assert: purchases amount = (testObjectsFactory itemSellByTheStorePrice).
 	self assert: (purchases includes: (testObjectsFactory itemSellByTheStore)).! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 04:03:46'!
-test15CantListPurchasesWithInvalidUser
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 07:11:13'!
+test15CantListPurchasesWithInvalidUserID
 
- 	| carritoId  |
+ 	| carritoId |
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
 	interfaz addToCart: carritoId aQuantityOf: 1 item: testObjectsFactory itemSellByTheStore.
 	
 	interfaz checkoutCart: carritoId withCreditCard: testObjectsFactory notExpiredCreditCard withExpirationDate: testObjectsFactory creditCardNotExpirationDate andName: 'name'.
 
-	! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 04:03:54'!
+	self 
+		should: [ (interfaz listPurchasesFrom: 1 withPassword: 'contraseña'). ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText = RestInterface invalidUserIdErrorMessage.
+			].! !
+
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 08:16:58'!
 test16CantListPurchasesWithInvalidPassword
 
- 	| carritoId  |
+ 	| carritoId |
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
 	interfaz addToCart: carritoId aQuantityOf: 1 item: testObjectsFactory itemSellByTheStore.
 	
 	interfaz checkoutCart: carritoId withCreditCard: testObjectsFactory notExpiredCreditCard withExpirationDate: testObjectsFactory creditCardNotExpirationDate andName: 'name'.
 
-	! !
+	self 
+		should: [ (interfaz listPurchasesFrom: 0 withPassword: 'password'). ]
+		raise: Error - MessageNotUnderstood
+		withExceptionDo: [ :anError |
+			self assert: anError messageText = RestInterface invalidPasswordErrorMessage.
+			].! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 02:59:16'!
-test20CantAddItemsToCartAfterMoreThan30MinutesHavePassed
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 08:31:56'!
+test17CantAddItemsToCartAfterMoreThan30MinutesHavePassed
 
  	| carritoId  |
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
@@ -467,8 +471,8 @@ test20CantAddItemsToCartAfterMoreThan30MinutesHavePassed
 		raise: Error - MessageNotUnderstood 
 		withExceptionDo: [:anError | self assert: (anError messageText = RestInterface  moreThan30MinutesErrorMessage )]! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 02:59:19'!
-test21CantListCartItemsAfterMoreThan30MinutesHavePassed
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 08:32:04'!
+test18CantListCartItemsAfterMoreThan30MinutesHavePassed
 
  	| carritoId  |
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
@@ -480,8 +484,8 @@ test21CantListCartItemsAfterMoreThan30MinutesHavePassed
 		raise: Error - MessageNotUnderstood 
 		withExceptionDo: [:anError | self assert: (anError messageText = RestInterface  moreThan30MinutesErrorMessage )]! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 02:59:23'!
-test22CantCheckoutACartAfterMoreThan30MinutesHavePassed
+!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 12/3/2018 08:32:11'!
+test19CantCheckoutACartAfterMoreThan30MinutesHavePassed
 
  	
  	| carritoId  |
@@ -807,29 +811,26 @@ expiringOn: aMonth
 
 !classDefinition: #RestInterface category: #TusLibros!
 Object subclass: #RestInterface
-	instanceVariableNames: 'users carts carritoId catalog currentTime merchantProcessor salesBook timer cartsLastAccessTime purchases'
+	instanceVariableNames: 'users carts carritoId catalog currentTime merchantProcessor salesBook timer cartSessions purchases'
 	classVariableNames: ''
 	poolDictionaries: ''
 	category: 'TusLibros'!
 
-!RestInterface methodsFor: 'initialization' stamp: 'LR 12/3/2018 04:02:58'!
+!RestInterface methodsFor: 'initialization' stamp: 'LR 12/3/2018 08:29:56'!
 createCartwithUID: id andPassword: password	
 	
-	(users at: id ifAbsent: [self error: self class invalidUserIdErrorMessage ]).
-	(users at: id) = password ifFalse: [ self error: self class invalidPasswordErrorMessage. ]. 
-	
+	self checkValidUserId: id andPassword: password.
+		
 	carritoId _ carritoId + 1.
 	carts at: carritoId put: (Cart acceptingItemsOf: catalog).
 	
-	cartsLastAccessTime at: carritoId put: (CartSession new initializeWithTimeout: 30 minutes andInitialTime: timer now).
-	
+	cartSessions at: carritoId put: (CartSession new initializeWithTimeout: 30 minutes andInitialTime: timer now).
 	
 	^ carritoId.
 
-	"((users at: id) = password" 
 	 ! !
 
-!RestInterface methodsFor: 'initialization' stamp: 'NME 12/3/2018 01:54:38'!
+!RestInterface methodsFor: 'initialization' stamp: 'LR 12/3/2018 08:30:59'!
 initializeInterfaceWithUsers: aDictionary andCatalog: aCatalog withMerchantProcessor: aMerchantProcessor withSalesBook: aSalesBook withTimer:aTimer
 	
 	catalog _ aCatalog .
@@ -839,28 +840,25 @@ initializeInterfaceWithUsers: aDictionary andCatalog: aCatalog withMerchantProce
 	merchantProcessor _ aMerchantProcessor .
 	salesBook _ aSalesBook.
 	timer _ aTimer.
-	cartsLastAccessTime _ Dictionary new.! !
+	cartSessions _ Dictionary new.! !
 
 
 !RestInterface methodsFor: 'accessing' stamp: 'nme 11/22/2018 20:26:01'!
 getCarritoWithId: id 
 	^ carts at: id.! !
 
-!RestInterface methodsFor: 'accessing' stamp: 'NME 12/3/2018 02:28:31'!
+!RestInterface methodsFor: 'accessing' stamp: 'LR 12/3/2018 08:26:26'!
 listCart: cartId 
 	carts at: cartId ifAbsent: [self error: self class invalidCartIdErrorMessage].
 	self assertDoesntExpiredTime: carritoId.
-	^ (carts at: cartId ifAbsent: [ self error: self class invalidCartIdErrorMessage ] ) items.! !
+	^ (carts at: cartId) items.! !
 
-!RestInterface methodsFor: 'accessing' stamp: 'LR 12/3/2018 05:30:57'!
+!RestInterface methodsFor: 'accessing' stamp: 'LR 12/3/2018 08:18:39'!
 listPurchasesFrom: clientId withPassword: password 
+
+	self checkValidUserId: clientId andPassword: password.
 	^ purchases.! !
 
-
-!RestInterface methodsFor: 'time' stamp: 'NME 12/3/2018 01:03:56'!
-today
-
-	^testObjectsFactory today! !
 
 
 !RestInterface methodsFor: 'operations' stamp: 'NME 12/3/2018 02:08:47'!
@@ -876,11 +874,16 @@ addToCart: carritoId aQuantityOf: cant item: item
 	aCart add: cant of: item. 
 	! !
 
-!RestInterface methodsFor: 'operations' stamp: 'NME 12/3/2018 02:10:09'!
+!RestInterface methodsFor: 'operations' stamp: 'LR 12/3/2018 08:29:30'!
 assertDoesntExpiredTime: aCarritoId
 
-	cartsLastAccessTime at: aCarritoId ifAbsent: [self error: self class cartWithoutSessionErrorMessage].
-	((cartsLastAccessTime at: aCarritoId) hasExpiredOn: timer now) ifTrue: [self error: self class moreThan30MinutesErrorMessage]! !
+	cartSessions at: aCarritoId ifAbsent: [self error: self class cartWithoutSessionErrorMessage].
+	((cartSessions at: aCarritoId) hasExpiredOn: timer now) ifTrue: [self error: self class moreThan30MinutesErrorMessage]! !
+
+!RestInterface methodsFor: 'operations' stamp: 'LR 12/3/2018 08:18:12'!
+checkValidUserId: id andPassword: password
+	(users at: id ifAbsent: [self error: self class invalidUserIdErrorMessage ]).
+	(users at: id) = password ifFalse: [ self error: self class invalidPasswordErrorMessage. ]. ! !
 
 !RestInterface methodsFor: 'operations' stamp: 'LR 12/3/2018 05:34:46'!
 checkoutCart: cartId withCreditCard: creditCardNumber withExpirationDate: expirationDate andName: userName 
