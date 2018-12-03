@@ -287,36 +287,36 @@ test02CantCreateCartWithInvalidPassword
 			self assert: anError messageText = RestInterface invalidPasswordErrorMessage.
 			].! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 18:49:54'!
+!RestInterfaceTests methodsFor: 'testing' stamp: 'NME 12/2/2018 20:35:22'!
 test03CantCreateCartWithInvalidUserId
  	
 	
-	self 
+	self
 		should: [ (interfaz createCartwithUID: 1 andPassword: 'password'). ]
 		raise: Error - MessageNotUnderstood
 		withExceptionDo: [ :anError |
 			self assert: anError messageText = RestInterface invalidUserIdErrorMessage.
 			].! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 20:52:40'!
-test05ListCartItemsAfterAddingItems
-
- 	| carritoId |
+!RestInterfaceTests methodsFor: 'testing' stamp: 'NME 12/2/2018 20:42:56'!
+test04CanAddAnItemToACart
+ 	
+	
+	|carritoId|
 	
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
-	interfaz addToCart: carritoId aQuantityOf: 3 item: testObjectsFactory itemSellByTheStore .
 	
-	self assert: (interfaz listCart: carritoId) size = 3.! !
+	self shouldnt: [ interfaz addToCart: carritoId aQuantityOf: 1 item: testObjectsFactory itemSellByTheStore] raise: Error! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 20:55:01'!
-test06CantListItemsWithWrongId
+!RestInterfaceTests methodsFor: 'testing' stamp: 'NME 12/2/2018 21:42:05'!
+test05CantAddAnItemToACartWithInvalidId	
+	
+	self should: [ interfaz addToCart: 5 aQuantityOf: 1 item:testObjectsFactory itemSellByTheStore ] 
+		raise: Error - MessageNotUnderstood 
+		withExceptionDo: [:anError | self assert: (anError messageText = RestInterface  invalidCartIdErrorMessage )]! !
 
-	self should: [ interfaz listCart: 40. ]
-		  raise: Error - MessageNotUnderstood
-		  withExceptionDo: [ :anError | self assert: anError messageText = RestInterface invalidCartIdErrorMessage . ].! !
-
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 20:59:13'!
-test10ACantAddAnInvalidNumberOfItemsIntoTheCart
+!RestInterfaceTests methodsFor: 'testing' stamp: 'NME 12/2/2018 21:42:33'!
+test06CantAddAnInvalidNumberOfItemsIntoTheCart
 
  	| carritoId users  |
 	
@@ -331,8 +331,52 @@ test10ACantAddAnInvalidNumberOfItemsIntoTheCart
 
 	! !
 
-!RestInterfaceTests methodsFor: 'testing' stamp: 'LR 11/26/2018 19:06:30'!
-test15CheckOutCart
+!RestInterfaceTests methodsFor: 'testing' stamp: 'NME 12/2/2018 21:56:03'!
+test07AddAnItemWhichDoesntExistInCatalogRaiseAnError
+
+ 	| carritoId users  |
+	
+	users _ Dictionary new.
+	users at: 0 put: 'contraseña'.
+	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
+	
+	self should: [ interfaz addToCart: carritoId aQuantityOf: 1 item: testObjectsFactory itemNotSellByTheStore.]
+		  raise: Error - MessageNotUnderstood
+		  withExceptionDo: [ :anError | self assert: anError messageText = RestInterface invalidItemErrorMessage .].
+
+	! !
+
+!RestInterfaceTests methodsFor: 'testing' stamp: 'NME 12/2/2018 22:09:44'!
+test08ListCartFromAnEmptyCartIsEmpty
+ 	| carritoId |
+	
+	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
+	
+	self assert: (interfaz listCart: carritoId) isEmpty.! !
+
+!RestInterfaceTests methodsFor: 'testing' stamp: 'NME 12/2/2018 22:13:52'!
+test09CantListItemsWithWrongId
+
+	self should: [ interfaz listCart: 40. ]
+		  raise: Error - MessageNotUnderstood
+		  withExceptionDo: [ :anError | self assert: anError messageText = RestInterface invalidCartIdErrorMessage . ].! !
+
+!RestInterfaceTests methodsFor: 'testing' stamp: 'NME 12/2/2018 22:17:42'!
+test10ListCartItemsFromAValidIDShowItems
+
+ 	| carritoId listCart expectedListCart|
+	
+	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
+	interfaz addToCart: carritoId aQuantityOf: 3 item: testObjectsFactory itemSellByTheStore .
+	
+	listCart _ interfaz listCart: carritoId.
+	expectedListCart _ OrderedCollection with: testObjectsFactory itemSellByTheStore with: testObjectsFactory itemSellByTheStore with:testObjectsFactory itemSellByTheStore .
+	
+	self assert: listCart equals: expectedListCart.
+	self assert: listCart size = 3.! !
+
+!RestInterfaceTests methodsFor: 'testing' stamp: 'NME 12/2/2018 22:30:46'!
+test11CheckOutCart
 
  	| carritoId users itemsComprados |
 	
@@ -340,11 +384,11 @@ test15CheckOutCart
 	users at: 0 put: 'contraseña'.
 	
 	carritoId _ (interfaz createCartwithUID: 0 andPassword: 'contraseña').
-	interfaz addToCart: carritoId aQuantityOf: 3 item: testObjectsFactory itemSellByTheStore .
+	interfaz addToCart: carritoId aQuantityOf: 3 item: testObjectsFactory itemSellByTheStore.
 	
 	itemsComprados _ (interfaz listCart: carritoId).
 	
-	interfaz checkoutCart: carritoId withCreditCard: creditCard withExpirationDate: creditCardExpiration andName: creditCardUser.
+	interfaz checkoutCart: carritoId withCreditCard: testObjectsFactory notExpiredCreditCard withExpirationDate: testObjectsFactory notExpiredCreditCard andName: 'name'.
 	
 	self assert: (interfaz listCart: carritoId) size = 0.
 	self assert: (interfaz listPurchasesFrom: 0 withPassword: 'contraseña') = itemsComprados.! !
@@ -637,16 +681,18 @@ listPurchasesFrom: clientId withPassword: password
 ! !
 
 
-!RestInterface methodsFor: 'operations' stamp: 'LR 11/26/2018 19:01:11'!
+!RestInterface methodsFor: 'operations' stamp: 'NME 12/2/2018 21:58:14'!
 addToCart: carritoId aQuantityOf: cant item: item
-
+	
 	|aCart|
+	carts at: carritoId ifAbsent: [self error: self class invalidCartIdErrorMessage].
+	catalog at:item ifAbsent: [self error: self class invalidItemErrorMessage].
 	
 	aCart _ carts at: carritoId.
 	aCart add: cant of: item. 
 	! !
 
-!RestInterface methodsFor: 'operations' stamp: 'LR 11/26/2018 18:57:29'!
+!RestInterface methodsFor: 'operations' stamp: 'NME 12/2/2018 22:32:21'!
 checkoutCart: cartId withCreditCard: creditCardNumber withExpirationDate: expirationDate andName: userName 
 	" checkear valid id " 
 	
@@ -667,6 +713,10 @@ initializeWithUsers: users andCatalog: aCatalog
 !RestInterface class methodsFor: 'error messages' stamp: 'LR 11/26/2018 20:54:43'!
 invalidCartIdErrorMessage
 	^ 'Invalid or inexistent cart id'.! !
+
+!RestInterface class methodsFor: 'error messages' stamp: 'NME 12/2/2018 21:58:37'!
+invalidItemErrorMessage
+	^'Invalid Item'! !
 
 !RestInterface class methodsFor: 'error messages' stamp: 'nme 11/22/2018 20:35:11'!
 invalidPasswordErrorMessage
@@ -765,6 +815,11 @@ initialize
 
 	today := DateAndTime now! !
 
+
+!StoreTestObjectsFactory methodsFor: 'date' stamp: 'NME 12/2/2018 22:29:18'!
+creditCardNotExpirationDate
+	
+	^(Month month: today monthIndex year: today yearNumber + 1)! !
 
 !StoreTestObjectsFactory methodsFor: 'date' stamp: 'HernanWilkinson 6/17/2013 18:37'!
 today
